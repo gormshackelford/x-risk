@@ -177,6 +177,7 @@ table.assessment {
 td {
     padding-top: 0.25em;
     padding-bottom: 0.25em;
+    padding-right: 0.25em;
     border-top: solid 1px #E0E0E0;
     border-bottom: solid 1px #E0E0E0;
 }
