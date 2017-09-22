@@ -1,0 +1,86 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+    Methods | The Existential Risk Research Archive | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>Methods</h1>
+    <p>Different topics have different search strategies (keywords that we used to search for publications) and different inclusion criteria (criteria that we used to assess publications as "relevant" or "not relevant" for inclusion in the bibliography).</p>
+
+    <h1>Topic: Existential risk</h1>
+    <p>This topic is about research that can be generalized across multiple existential risks, as opposed to research that is specific to a single risk. However, it is possible for relevant publications to discuss a single risk as an example of existential risk in general<a href="#1"><sup>1</sup></a>.</p>
+    <p>It is also possible for relevant publications to assess the probability or impact of a single risk, or to discuss a strategy for managing a single risk, in a way that is comparable to other risks. Indeed, we intend these publications to be used for evidence-based comparisons of probabilities, impacts, and management strategies across multiple risks.
+    <p>Relevant publications for this topic get tagged as being relevant not only to existential risk in general but also to the specific risk(s) that they discuss. However, we are also planning to do separate searches for each specific risk, using risk-specific search terms.</p>
+
+    <h2>Inclusion Criteria</h2>
+    <p>Relevant publications should include at least one item from the following list.</p>
+    <ul>
+      <li>Discussion of existential risk or global catastrophic risk <span class="italic">per se</span></li>
+      <li>Assessment of such a risk (e.g., the probability or impact of nuclear winter in the event of nuclear war)</li>
+      <li>Discussion of a strategy for managing such a risk (e.g., strategic food reserves to mitigate the risk of human extinction from catastrophes that destroy crops)</li>
+      <li>Comparison of these risks (e.g., the relative risk of human extinction from asteroid impact compared to artificial intelligence)</li>
+      <li>Philosophical discussion that is relevant to these risks (e.g., the "value" of the future lives that would be saved by preventing the extinction of the human species)</li>
+    </ul>
+
+    <h2>Search Strategy</h2>
+    <p>The search strategy for this topic is based on the "Global Challenges Bibliography" in Appendix 1 of <span class="italic">Global Challenges: 12 Risks that Threaten Human Civilization</span><a href="#2"><sup>2</sup></a>. We used the keywords that were reported in Appendix 1 to search the titles, abstracts, keywords, and references of publications in Scopus. We then compared our search results with the publications in Appendix 1. If a publication in Appendix 1 was not in the search results, but it was in Scopus, then we added keywords that would find this publication (unless there were no keywords that seemed specific enough to existential risk to justify their use). Using this extended set of keywords, we then searched Scopus again, and we continue to search Scopus<a href="#3"><sup>3</sup></a> regularly for new publications.
+
+    <p>As noted in Appendix 1, the literature on specific risks (e.g., climate change) is "too voluminous to catalogue", and this is one reason that we have limited this topic to general-interest publications</span><a href="#4"><sup>4</sup></a>. Another reason is that studying multiple risks at the same time should enable us to make comparisons between these risks, think about interactions between them, and suggest strategies for managing multiple risks.</p>
+
+    <div class="indented">
+
+      <h3>Search Terms</h3>
+
+      <p><span class="bold">Title-Abstract-Keywords:</span> "catastrophic risk" OR "existential risk" OR "existential catastrophe" OR "global catastrophe" OR "human extinction" OR "infinite risk" OR "xrisk" OR "x-risk" OR "extinction of human" OR "extinction of the human" OR "end of the world" OR "world's end" OR doomsday OR doom OR "human survival" OR "survival of human" OR "survival of the human" OR "global collapse" OR "catastrophic collapse" OR "existential threat" OR "end of civilization" OR "collapse of civilization"</p>
+
+      <p>OR</p>
+
+      <p><span class="bold">References:</span> "catastrophic risk" OR "existential risk" OR "existential catastrophe" OR "global catastrophe" OR "human extinction" OR "infinite risk" OR "xrisk" OR "x-risk"</p>
+
+    </div>
+
+    <h2>Machine Learning</h2>
+    <p>Details of the machine-learning algorithm will be published as soon as it is up and running! At present, we are still building the training set. Please <a href="{% url 'signup' %}">sign up</a> if you would like to help.</p>
+
+
+<h1>Topic: Artificial intelligence</h1>
+<p>TBA</p>
+<h1>Topic: Asteroid impact</h1>
+<p>TBA</p>
+<h1>Topic: Bad global governance</h1>
+<p>TBA</p>
+<h1>Topic: Catastrophic climate change</h1>
+<p>TBA</p>
+<h1>Topic: Ecological collapse</h1>
+<p>TBA</p>
+<h1>Topic: Global system collapse</h1>
+<p>TBA</p>
+<h1>Topic: Nanotechnology</h1>
+<p>TBA</p>
+<h1>Topic: Nuclear war</h1>
+<p>TBA</p>
+<h1>Topic: Pandemic</h1>
+<p>TBA</p>
+<h1>Topic: Super volcano</h1>
+<p>TBA</p>
+<h1>Topic: Synthetic biology</h1>
+<p>TBA</p>
+
+<h1>Notes</h1>
+<p><sup id="1">1</sup>For a definition of global catastrophic risks and existential risks (which are a subset of global catastrophic risks), please see Bostrom, N., &Cacute;irkovi&cacute;, M.M. (2008). <span class="italic">Global Catastrophic Risks</span>. Oxford University Press, Oxford.</p>
+<p><sup id="2">2</sup>Pamlin, D., Armstrong, S., Baum, S. (2015). <span class="italic">Global Challenges: 12 Risks that Threaten Human Civilization.</span> Global Challenges Foundation.</p>
+<p><sup id="3">3</sup>We plan to search additional databases as soon as possible.</p>
+<p><sup id="4">4</sup></a>By working together, we hope that the literature on specific risks will not prove to be "too voluminous to catalogue", but we acknowledge that a catalogue would be of limited usefulness if it is too voluminous to be read (by humans).
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

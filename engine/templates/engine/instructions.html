@@ -1,0 +1,37 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+    Instructions | The Existential Risk Research Archive | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+  <h1>Assessment Instructions</h1>
+  <p>Thank you for your interest in The Existential Risk Research Assessment!</p>
+
+  <h2>Starting Your Assessment</h2>
+  <p>Click the link to the bibliography that you want to assess, which is in the sidebar on the right side of the screen (for example, the bibliography for "Existential risk"). If you are logged in, the sidebar will then show you the number of publications for this topic and the number of assessments that you have completed.</p>
+  <p>Click "Your assessments" on the sidebar. You will then be shown a publication to assess. Each person is shown these publications in a random order, but your random order will stay the same from session to session. You do not need to assess all of these publications in one session.</p>
+
+  <h2>Making an Assessment</h2>
+  <p>Please see the inclusion criteria for each topic in the <a href="{% url 'methods' %}">Methods</a>. If you think that a publication meets these criteria (based on its title and abstract), then please assess it as "relevant" (tick the box for each topic to which it is relevant, and then click "Save"). If not, then please assess it as "irrelevant" (do not tick the box, and click "Save"). You may need to scroll down to see the abstract.</p>
+  <p>It is important to click "Save", even if a publication is completely irrelevant. If you do not click "Save", then we will not know that you have assessed it. After you have clicked "Save", each topic will be highlighted in yellow (if relevant) or grey (if irrelevant), to show that you have assessed it. Click "Next assessment" to go to the next unassessed publication in the random order that has been assigned to you.</p>
+  <p>If it is impossible to decide whether or not a publication meets the inclusion criteria (based on its title and abstract), it is probably better to either (1) not assess it (do not tick the box or click "Reset" and then click "Next assessment" without clicking "Save") or else (2) assess it as "relevant". We would rather be overly inclusive than overly exclusive. However, this whole process will be useless if every publication is conservatively assessed as "relevant". Wherever possible, we need you to make judgements about whether or not a publication is relevant.</p>
+  <p>There is not a simple formula for "relevant" or "irrelevant", and it is only with a foundation of human judgement that we will be able to build a complicated formula for "relevant" or "irrelevant" through machine learning. Please do your best to make reasonable assessments. We appreciate your time and your humanity!</p>
+
+  <h2>Stopping Your Assessment</h2>
+  <p>You are free to stop working on your assessment at any time, whether or not your sidebar thinks you are "100% complete". There is no minimum number of publications that you must assess, but the more the better, and your help is much appreciated. You do not need to tell us that your assessment is complete. Simply stop working on it. There is no deadline, and you can restart your assessment at any time. We will use your assessment, as it is, when we train or retrain the machine-learning algorithm.</p>
+
+  <h2>The Art and Science of Assessment</h2>
+  <p>It is difficult to assess the relevance of some publications, not least because these assessments are based only on titles and abstracts. Please try to do your best, and know that others are also trying to do their best. This is part art and part science. If enough people assess enough publications, then we will know which publications are difficult to assess, because there will be disagreement between different assessments of the same publication. When training the machine-learning algorithm, we will think about what to do about publications with significant disagreement between different assessments.</p>
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

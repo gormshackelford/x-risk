@@ -1,0 +1,54 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+    The Existential Risk Research Assessment | X-Risk Research Network | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>The Existential Risk Research Assessment (TERRA)</h1>
+
+    <h2>The problem: an overwhelming volume of research</h2>
+    <p>An overwhelming volume of research has been published, and more is being published all the time. It is taking an increasingly long time to find all of the publications that are relevant to our research. We need new methods of efficiently searching for relevant publications, and we need these methods to be systematic, to minimize bias in the publications that we read and the conclusions that we reach<a href="#1"><sup>1</sup></a>.</p>
+
+    <h2>The solution: a semi-automated surveillance system</h2>
+    <p>We are building a surveillance system to identify new publications about existential risk. This system uses volunteers from the Existential Risk Research Network to identify a subset of relevant publications from a set of search results, and then it uses machine learning to identify similar publications in an automated and regularly-scheduled search for publications.</p>
+
+    <h3>1. Humans do some of the work</h3>
+    <p>We search a database<a href="#2"><sup>2</sup></a> for publications that might be relevant to existential risk. The results of this search are a "corpus" of publications that might be relevant. Using the titles and abstracts of the publications in this corpus, we assess the relevance of each publication, tagging it as "relevant" or "not relevant". We split this tagged corpus into two parts: a "training set" (80% of publications) and a "test set" (20% of publications).
+
+    <h3>2. Machines do some of the work</h3>
+    <p>We "train" a machine-learning algorithm<a href="#3"><sup>3</sup></a> to identify relevant publications in the training set, by telling it which publications are relevant and which are not, and giving it the titles and abstracts of all publications in the training set. The trained algorithm then tries to identify relevant publications in the test set, without us telling it which publications are relevant or irrelevant. It uses what it learned from the training set to identify similar publications in the test set. We assess its performance, by comparing the numbers of studies it correctly and incorrectly identified. We then adjust the algorithm until it performs well<a href="#4"><sup>4</sup></a>. We then set up an automated and regularly-scheduled search for new publications, using the same search strategy<a href="#5"><sup>5</sup></a> as we used before, and the algorithm tells us which of these new publications it thinks are relevant.</p>
+
+    <h3>3. Humans do some more of the work</h3>
+    <p>Because the algorithm is not perfect, we double-check the publications that it thinks are relevant, as a method of quality control. If we agree that a publication is relevant, then we add it to our bibliography, which is published on this website as a resource for the research community. Thus, this is a semi-automated surveillance system<a href="#6"><sup>6</sup></a>. Humans are still part of the process, but we save time by not searching through all of the publications that the machine has (rightly or wrongly) identified as irrelevant.</p>
+
+    <h2>Why not Google it?</h2>
+    <p>Why do we do all this, when we could search for "existential risk" or any other topic in a search engine?</p>
+
+    <div class="indented">
+      <h3>Transparent and repeatable searching</h3>
+      <p>The algorithms that are used by search engines are "black boxes" that are not open to public scrutiny and may give different results for different users. In contrast, our methods are transparent, and therefore they are open to scrutiny and they are repeatable, both of which are of critical importance to scientific progress (improving the methods over time, and gauging our confidence in the results).</p>
+
+      <h3>Collaborative and cumulative results</h3>
+      <p>It is inefficient or impossible for everyone who is interested in a topic, such as existential risk, to go through all of the search results by themselves. We share the work between many people (and machines), and we also share the results. If someone wants to know about this topic, then they will have access to a systematically and transparently collected bibliography that represents a vast amount of collective work and knowledge, rather than having to "reinvent the wheel" by doing their own search.</p>
+      </div>
+
+    <h2>Notes</h2>
+    <p><sup id="1">1</sup>For more information on this problem and its solutions, please see O'Mara-Eves, A., Thomas, J., McNaught, J., Miwa, M., Ananiadou, S. (2015). Using text mining for study identification in systematic reviews: a systematic review of current approaches. <span class="italic">Systematic Reviews</span>, <span class="bold">4</span>:5 (<a href="https://doi.org/10.1186/2046-4053-4-5">DOI</a>).</p>
+    <p><sup id="2">2</sup>We search the Scopus database at present, but we plan to search additional databases (such as Web of Science) in the future.</p>
+    <p><sup id="3">3</sup>Please see <a href="{% url 'methods' %}">Methods</a> for details.</p>
+    <p><sup id="4">4</sup>There is an unavoidable trade-off between "precision" (the number of relevant publications that the algorithm correctly identifies as relevant) and "recall" (the number of relevant publications that it incorrectly identifies as irrelevant). Thus, we need to find a compromise between precision and recall. Please see G&eacute;ron, A (2017). <span class="italic">Hands-On Machine Learning with Scikit-Learn and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems</span>. O'Reilly Media, Inc., Sebastopol, California.</p>
+    <p><sup id="5">5</sup>We use a set of keywords, defined by members of the research community and refined over time. Please see <a href="{% url 'methods' %}">Methods</a> for details.</p>
+    <p><sup id="6">6</sup>For examples of semi-automated surveillance systems, please see Lyon A., Grossel, G., Burgman, M., Nunn, M. (2013). Using internet intelligence to manage biosecurity risks: a case study for aquatic animal health. <span class="italic">Diversity and Distributions</span>, <span class="bold">19</span>, 640-650 (<a href="http://dx.doi.org/10.1111/ddi.12057">DOI</a>).</p>
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

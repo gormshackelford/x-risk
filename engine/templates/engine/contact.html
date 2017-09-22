@@ -1,0 +1,24 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+    Contact Us | X-Risk Research Network | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>Contact Us</h1>
+
+    <p>We are based at the <a href="http://www.cser.org/">Centre for the Study of Existential Risk</a> (CSER) at the University of Cambridge. Please <a href="{% url 'signup' %}">sign up to our mailing list</a> to receive updates about new publications that are added to our bibliography.</p>
+
+    <p>If you would like to participate in <a href="{% url 'about' %}">The Existential Risk Research Assessment</a>, or if you know a publication that should be included in our bibliography, please contact Gorm Shackelford (ges47@cam.ac.uk).</p>
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

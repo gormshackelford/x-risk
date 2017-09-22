@@ -1,0 +1,39 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+    Your Profile | X-Risk Research Network | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>Your Profile</h1>
+    <p>Please click "Save" after making changes. Ctrl+click (Windows) or Cmd+click (Mac) to change the topics that interest you. To change your username or email address, please <a href="{% url 'contact' %}">contact us</a>.
+    <form method="POST">
+      {% csrf_token %}
+      <table>
+        {% for field in user_form %}
+          <tr>
+            <td>{{ field.label_tag }}</td>
+            <td>{{ field }}</td>
+          </tr>
+        {% endfor %}
+        {% for field in profile_form %}
+          <tr>
+            <td>{{ field.label_tag }}</td>
+            <td>{{ field }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <p><input type="submit" name="save" value="Save" /></p>
+    </form>
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

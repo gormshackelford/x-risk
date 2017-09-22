@@ -1,0 +1,22 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+    Confirm Your Email Address | X-Risk Research Network | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>Confirm Your Email Address</h1>
+
+    <p>We have sent an email to you. Please read it and follow the instructions. If you have not received this email in half an hour, then please check your spam folder, or sign up again, or contact us.</p>
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

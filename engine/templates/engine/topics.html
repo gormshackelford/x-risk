@@ -1,0 +1,89 @@
+{% extends 'engine/base.html' %}
+
+
+{% block title %}
+  Publications about {{ search_topic.topic|title }} | www.x-risk.net
+{% endblock %}
+
+
+{% block css %}
+  {% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+  {{ sidebar_data }}
+
+  {% for publication in publications %}
+
+    <h1>{{ publication.title|default:'[title not available]' }}</h1>
+
+    {% if user.is_authenticated %}
+      <p><a href="{% url 'assessments' slug=search_topic.slug pk=publication.pk %}">Assess this publication</a></p>
+    {% else %}
+      <p>
+        Search for the full text: <a target="_blank" href="http://www.google.com/search?q={{ publication.google_string }}">Google</a>
+        {% if publication.doi != 'NA' and publication.doi != '' %}
+           | <a target="_blank" href="http://dx.doi.org/{{ publication.doi }}">DOI</a>
+        {% endif %}
+      </p>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+      <h2>Abstract</h2>
+      <p>{{ publication.abstract|default:'[not available]' }}</p>
+    {% endif %}
+
+    <h2>Reference</h2>
+    <p>{{ publication.author|default:'[authors not available]' }} ({{ publication.year|default:'[year not available]' }}) {{ publication.title|default:'[title not available]' }}. <span class="italic">{{ publication.journal|default:'[journal not available]' }}</span> {{ publication.volume|default:'[volume not available]'}}, {{ publication.pages|default:'[pages not available]' }}</p>
+
+    <p class="hr"></p>
+
+  {% empty %}
+
+    <h1>No publications</h1>
+
+  {% endfor %}
+
+  {% if publications.has_other_pages %}
+
+    <p>
+      {% if publications.has_previous %}
+        <a class="button" href="?page={{ publications.previous_page_number }}">Previous page</a>
+      {% else %}
+        <a class="button" href="?page={{ publications.paginator.num_pages }}">Previous page</a>
+      {% endif %}
+
+      {% if publications.has_next %}
+        <a class="button" href="?page={{ publications.next_page_number }}">Next page</a>
+      {% else %}
+        <a class="button" href="?page=1">Next page</a>
+      {% endif %}
+    </p>
+
+    <p>
+      Page number:
+      {% for i in publications.paginator.page_range %}
+        {% if i == publications.number %}
+          <span class="warning">{{ i }}</span>,
+        {% elif i == publications.paginator.num_pages %}
+          <a href="?page={{ i }}">{{ i }}</a>
+        {% else %}
+          <a href="?page={{ i }}">{{ i }}</a>,
+        {% endif %}
+      {% endfor %}
+    </p>
+
+  {% endif %}
+
+{% endblock %}
+
+{% block sidebar %}
+  {% if user.is_authenticated %}
+    {% include 'engine/assessment_sidebar.html' %}
+  {% else %}
+    {% include 'engine/bibliography_sidebar.html' %}
+  {% endif %}
+{% endblock %}

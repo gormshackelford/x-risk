@@ -1,0 +1,30 @@
+{% extends 'engine/base.html' %}
+
+
+{% block title %}
+  Existential Risk Research Network | X-Risk Research Network | www.x-risk.net
+{% endblock %}
+
+
+{% block css %}
+  {% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+<h1>The Existential Risk Research Network</h1>
+<p>We are building a network of researchers who have an interest in existential risk (x-risk) and other forms of global catastrophic risk. To join the network, please <a href="{% url 'signup' %}">sign up to our mailing list</a>.</p>
+
+<h1>The Doomsday Database</h1>
+<p>Together, we plan to build an open-access database that can be used to assess the probability and impact of x-risks and identify strategies that could be recommended to decision-makers as high priorities for managing multiple x-risks.</p>
+
+<p>To begin with, we are building a semi-automated surveillance system for finding publications that are relevant to x-risks. These publications will be a source of data for this database. A bibliography of these publications will be freely-available on this website. Please see <a href="{% url 'about' %}">The Existential Risk Research Assessment</a> for more information, and please <a href="{% url 'signup' %}">sign up</a> if you want to help us with the assessment.</p>
+
+{% endblock %}
+
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

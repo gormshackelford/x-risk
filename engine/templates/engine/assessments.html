@@ -1,0 +1,90 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}Assessment | www.x-risk.net{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+  <h1>{{ publication.title|default:'No title' }}</h1>
+
+  <p>
+    Search for the full text: <a target="_blank" href="http://www.google.com/search?q={{ publication.google_string }}">Google</a>
+    {% if publication.doi != 'NA' and publication.doi != '' %}
+       | <a target="_blank" href="http://dx.doi.org/{{ publication.doi }}">DOI</a>
+    {% endif %}
+  </p>
+
+  <h2>Relevance</h2>
+  <p>Tick the box for each topic to which you think this publication is relevant, based on its title and abstract. Click "Save" when you have made your assessment (whether or not you think it is relevant).</p>
+
+  <form method="POST">
+    {% csrf_token %}
+    {{ assessment_formset.management_form }}
+
+    <table class="assessment">
+      <tr>
+        {% for assessment_form in assessment_formset %}
+          {{ assessment_form.id }}
+          {% if assessment_form.instance.topic %}
+            {% if assessment_form.instance.is_relevant %}
+              <td class="assessment yellow">
+                {{ assessment_form.is_relevant }}
+                {{ assessment_form.instance.topic|capfirst }}
+                {{ assessment_form.topic.as_hidden }}
+              </td>
+            {% else %}
+              <td class="assessment grey">
+                {{ assessment_form.is_relevant }}
+                {{ assessment_form.instance.topic|capfirst }}
+                {{ assessment_form.topic.as_hidden }}
+              </td>
+            {% endif %}
+          {% else %}
+            <td class="assessment">
+              {{ assessment_form.is_relevant }}
+              {{ assessment_form.topic.initial|capfirst }}
+              {{ assessment_form.topic.as_hidden }}
+            </td>
+          {% endif %}
+          {% if forloop.counter|divisibleby:3 %}
+            </tr><tr>
+          {% else %}
+
+          {% endif %}
+        {% endfor %}
+      </tr>
+    </table>
+
+    <p class="button">
+      <input type="submit" name="save" value="Save" />
+      <input type="submit" name="reset" value="Reset" />
+      <input type="submit" name="pass" value="Next assessment" />
+    </p>
+
+  </form>
+
+  <p>Click "Next assessment" to go to the next unassessed publication in the random order that has been assigned to you. Click "Back" and "Forward" only to revisit your previous assessments (to check or change them), and not to look for your next assessment. That way, your assessments will be made in a random order, which is best practice.</p>
+
+  <p>
+    <a class="button" href="{% url 'assessments' slug=search_topic.slug pk=previous_pk %}">Back</a>
+    <a class="button" href="{% url 'assessments' slug=search_topic.slug pk=next_pk %}">Forward</a>
+  </p>
+
+  <h2>Abstract</h2>
+  <p>{{ publication.abstract|default:'Not available' }}</p>
+
+  <h2>Reference</h2>
+  <p>{{ publication.author|default:'[authors not available]' }} ({{ publication.year|default:'[year not available]' }}) {{ publication.title|default:'[title not available]' }}. <span class="italic">{{ publication.journal|default:'[journal not available]' }}</span> {{ publication.volume|default:'[volume not available]'}}, {{ publication.pages|default:'[pages not available]' }}</p>
+
+{% endblock %}
+
+
+{% block sidebar %}
+  {% if user.is_authenticated %}
+    {% include 'engine/assessment_sidebar.html' %}
+  {% endif %}
+{% endblock %}

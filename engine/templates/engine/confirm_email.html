@@ -1,0 +1,15 @@
+{% autoescape off %}
+
+Dear {{ user.first_name }},
+
+Thank you for signing up to the Existential Risk Research Network. Please click this link, or copy and paste it into the address bar of your browser, to confirm your email address:
+
+<a href="http://{{ domain }}{% url 'confirm_email' uidb64=uid token=token %}">http://{{ domain }}{% url 'confirm_email' uidb64=uid token=token %}</a>
+
+http://{{ domain }}{% url 'confirm_email' uidb64=uid token=token %}
+
+Best wishes,
+The Existential Risk Research Network Administrator
+www.x-risk.net
+
+{% endautoescape %}

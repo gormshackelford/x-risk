@@ -1,0 +1,251 @@
+body {
+    color: black;
+    font-family: "Times New Roman", serif;
+    font-size: 1em;
+    line-height: 1em;
+    background: #E0E0E0;
+    width: 95%;
+    margin: 0 auto;
+}
+
+a, button, div, form, h1, h2, h3, hr, input, li, option, p, select, sub, sup, table, textarea, td, tr, ul {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
+}
+
+textarea, input[type="text"], input[type="button"], input[type="submit"], input[type="password"], .input-checkbox {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+    -moz-appearance : none;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+a, a:visited {
+    color: #3399ff;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #ff6666;
+    text-decoration: underline;
+}
+
+a.button, a.button:visited {
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    font-size: 1em;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    background-color: white;
+    border: solid 1px black;
+    border-radius: 0;
+}
+
+a.button:hover {
+    color: black;
+    background-color: #ff6666;
+    text-decoration: none;
+}
+
+h1, h2, h3 {
+    font-family: "Exo 2", "Arial", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+}
+
+h1 {
+    font-size: 1.5em;
+    line-height: 1em;
+    margin-top: 1.5em;
+}
+
+h2 {
+    font-weight: bold;
+    margin-top: 2em;
+}
+
+h3 {
+    font-style: italic;
+    font-weight: bold;
+    margin-top: 2em;
+}
+
+input[type=text], input[type=email], input[type=password] {
+    font-size: 1em;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    box-sizing: border-box;
+    border-style: none;
+    border: solid 1px #E0E0E0;
+    width: 100%;
+}
+
+input[type="submit"] {
+    color: black;
+    font-size: 1em;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    background-color: white;
+    border: solid 1px black;
+    border-radius: 0;
+}
+
+input[type="submit"]:hover {
+    color: black;
+    background-color: #ff6666;
+    cursor: pointer;
+}
+
+li {
+    margin-top: 0.75em;
+    line-height: 1.5em;
+}
+
+p {
+    margin-top: 0.75em;
+    line-height: 1.5em;
+}
+
+p.hr {
+    margin-top: 2em;
+    border-bottom: solid 1px black;
+}
+
+select[multiple] {
+    height: 16em;
+    width: 100%;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    border-style: none;
+    border: solid 1px #E0E0E0;
+}
+
+span.button {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 1em;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    background-color: white;
+    border: solid 1px black;
+    border-radius: 0;
+}
+
+span.active {
+    background-color: #ff6666;
+}
+
+span.warning {
+    color: #ff6666;
+}
+
+span.underline {
+    text-decoration: underline;
+}
+
+sub, sup {
+    font-size: 0.8em;
+    vertical-align: baseline;
+    position: relative;
+    top: -0.4em;
+}
+
+sub {
+    top: 4em;
+}
+
+table {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+table.assessment {
+    margin-left: -0.5em;
+    margin-bottom: 1em;
+    border-collapse: separate;
+    border-spacing: 0.5em;
+}
+
+td {
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+    border-top: solid 1px #E0E0E0;
+    border-bottom: solid 1px #E0E0E0;
+}
+
+td.assessment {
+    padding: 0.5em;
+    border: 0;
+}
+
+td.assessment.grey {
+    background-color: #F0F0F0;
+}
+
+td.assessment.red {
+    background-color: #ff6666;
+}
+
+td.assessment.yellow {
+    background-color: #ffff80;
+}
+
+
+ul {
+    margin-top: 1em;
+    padding-left: 1.25em;
+}
+
+#page {
+    background: white;
+    border: solid 1em white;
+    margin-top: 1em;
+    overflow: auto;
+}
+
+#header {
+    font-size: 1em;
+    min-height: 2em;
+    padding-bottom: 1em;
+    border-bottom: solid 1px black;
+}
+
+#logo {
+    float: left;
+    height: 2em;
+}
+
+.navigation_text, .navigation_text:visited {
+    font-family: "Exo 2", "Times New Roman", serif;
+    line-height: 2em;
+}
+
+#content {
+    margin-bottom: 2em;
+}
+
+.button {
+    color: black;
+    text-decoration: none;
+}
+
+.indented {
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
