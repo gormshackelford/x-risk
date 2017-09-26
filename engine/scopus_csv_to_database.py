@@ -22,7 +22,7 @@ topic = Topic.objects.get(topic="existential risk")
 
 # Load a csv file with results from a Scopus search (on the Scopus website, not
 # using the API).
-csv = "datasets/scopus/Test Set.csv"
+csv = "datasets/scopus/Scopus Search 2/2012-2013.csv"
 df = pd.read_csv(csv, encoding='utf-8')
 
 df = df.rename(columns={
@@ -64,12 +64,15 @@ for result in df.itertuples():
         continue
 
     abstract = result.Abstract
+    author_string = result.Authors
     year = result.Year
     journal = result.Journal
     volume = result.Volume
     issue = result.Issue
-    pages = result.Page_start + '-' + result.Page_end
-    author_string = result.Authors
+    if (result.Page_start != '') and (result.Page_end != ''):
+        pages = result.Page_start + '-' + result.Page_end
+    else:
+        pages = ''
 
     record = Publication(
         title=title,
