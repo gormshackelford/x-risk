@@ -62,7 +62,7 @@ class Search(models.Model):
 
 
 class Publication(models.Model):
-    title = models.CharField(max_length=254, blank=True)
+    title = models.CharField(max_length=510, blank=True)
     abstract = models.TextField(blank=True)
     author = models.TextField(blank=True)
     year = models.CharField(max_length=30, blank=True)
