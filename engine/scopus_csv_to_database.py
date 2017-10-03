@@ -22,7 +22,7 @@ topic = Topic.objects.get(topic="existential risk")
 
 # Load a csv file with results from a Scopus search (on the Scopus website, not
 # using the API).
-csv = "datasets/scopus/Scopus Search 2/2012-2013.csv"
+csv = "datasets/scopus/Scopus Search 2/2011.csv"
 df = pd.read_csv(csv, encoding='utf-8')
 
 df = df.rename(columns={

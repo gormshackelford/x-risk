@@ -1,6 +1,6 @@
 {% extends 'engine/base.html' %}
 
-{% block title %}Assessment | www.x-risk.net{% endblock %}
+{% block title %}Assessment | The Existential Risk Research Assessment | www.x-risk.net{% endblock %}
 
 {% block css %}{% load staticfiles %}
   <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
@@ -19,12 +19,41 @@
   </p>
 
   <h2>Relevance</h2>
-  <p>Tick the box for each topic to which you think this publication is relevant, based on its title and abstract. Click "Save" when you have made your assessment (whether or not you think it is relevant).</p>
+
+  <p>If you think this publication is relevant to existential risk, based on its title and abstract, please tick the box below.</p>
 
   <form method="POST">
     {% csrf_token %}
-    {{ assessment_formset.management_form }}
 
+    <table class="assessment">
+      <tr>
+        {% if assessment_form.instance.topic %}
+          {% if assessment_form.instance.is_relevant %}
+            <td class="assessment yellow">
+              {{ assessment_form.is_relevant }}
+              {{ assessment_form.instance.topic|capfirst }}
+              {{ assessment_form.topic.as_hidden }}
+            </td>
+          {% else %}
+            <td class="assessment grey">
+              {{ assessment_form.is_relevant }}
+              {{ assessment_form.instance.topic|capfirst }}
+              {{ assessment_form.topic.as_hidden }}
+            </td>
+          {% endif %}
+        {% else %}
+          <td class="assessment">
+            {{ assessment_form.is_relevant }}
+            {{ assessment_form.topic.initial|capfirst }}
+            {{ assessment_form.topic.as_hidden }}
+          </td>
+        {% endif %}
+      </tr>
+    </table>
+
+    <p>If you ticked the box above, please also tick the box below for each category of existential risk to which you think this publication is relevant (if there are any). Please see the <a href="{% url 'methods' %}">Methods</a> for information on these categories.</p>
+
+    {{ assessment_formset.management_form }}
     <table class="assessment">
       <tr>
         {% for assessment_form in assessment_formset %}
@@ -62,12 +91,13 @@
     <p class="button">
       <input type="submit" name="save" value="Save" />
       <input type="submit" name="reset" value="Reset" />
-      <input type="submit" name="pass" value="Next assessment" />
+      <input type="submit" name="pass" value="Pass" />
     </p>
 
   </form>
 
-  <p>Click "Next assessment" to go to the next unassessed publication in the random order that has been assigned to you. Click "Back" and "Forward" only to revisit your previous assessments (to check or change them), and not to look for your next assessment. That way, your assessments will be made in a random order, which is best practice.</p>
+  <p>Click "Save" when you have made your assessment (whether or not you think it is relevant). You will then be shown the next assessment in the random order that has been assigned to you.</p>
+  <p>Click "Back" and "Forward" only to revisit your previous assessments (to check or change them), and not to look for your next assessment. That way, your assessments will be made in a random order, which is best practice.</p>
 
   <p>
     <a class="button" href="{% url 'assessments' slug=search_topic.slug pk=previous_pk %}">Back</a>

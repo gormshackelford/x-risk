@@ -1,0 +1,37 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+    Scoreboard | The Existential Risk Research Assessment | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+  <h1>Scoreboard</h1>
+
+  <p>Anyone who assesses 500 or more publications will eligible to be a co-author of a future publication about The Existential Risk Research Assessment. We expect that it will take you 2-3 workdays to assess 500 publications. We want to assess about 10,000 publications for the search on general existential risks. The more you assess, the better!</p>
+
+  <table>
+    <tr>
+      <td class="scoreboard"><span class="heading">Name</span></td>
+      <td class="scoreboard"><span class="heading">Institution</span></td>
+      <td class="scoreboard"><span class="heading">Assessments</span></td>
+    </tr>
+    {% for score in scoreboard|dictsortreversed:"publication_count" %}
+      <tr>
+        <td class="scoreboard">{{ score.first_name}} {{ score.last_name}}</td>
+        <td class="scoreboard">{{ score.institution }}</td>
+        <td class="scoreboard">{{ score.publication_count }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

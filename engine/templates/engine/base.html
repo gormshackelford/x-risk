@@ -15,7 +15,7 @@
         <a id="logo" href="{% url 'home' %}"><img id="logo" src="{% static 'logo.jpeg' %}" alt="x-risk logo" /></a>
 
         &nbsp;&nbsp;|&nbsp;&nbsp;
-        <a class="navigation_text" href="{% url 'about' %}">The Existential Risk Research Assessment</a>
+        <a class="navigation_text" href="{% url 'about' %}">About</a>
 
         &nbsp;&nbsp;|&nbsp;&nbsp;
         <a class="navigation_text" href="{% url 'methods' %}">Methods</a>
@@ -27,6 +27,9 @@
 
         {% if user.is_authenticated %}
 
+          <a class="navigation_button" href="{% url 'your_assessments' %}">Your Assessments</a>
+
+          &nbsp;&nbsp;|&nbsp;&nbsp;
           <a class="navigation_text" href="{% url 'profile' %}">Your Profile</a>
 
           &nbsp;&nbsp;|&nbsp;&nbsp;

@@ -53,8 +53,18 @@ a.button:hover {
     text-decoration: none;
 }
 
+a.navigation_button, a.navigation_button:visited {
+    font-family: "Exo 2", "Times New Roman", serif;
+    color: #ff6666;
+    text-decoration: none;
+}
+
+a.navigation_button:hover {
+    text-decoration: underline;
+}
+
 h1, h2, h3 {
-    font-family: "Exo 2", "Arial", sans-serif;
+    font-family: "Exo 2", "Times New Roman", serif;
     font-style: normal;
     font-weight: normal;
 }
@@ -141,6 +151,11 @@ span.active {
     background-color: #ff6666;
 }
 
+span.heading {
+    font-family: "Exo 2", "Times New Roman", serif;
+    font-weight: bold;
+}
+
 span.warning {
     color: #ff6666;
 }
@@ -199,6 +214,9 @@ td.assessment.yellow {
     background-color: #ffff80;
 }
 
+td.scoreboard {
+    padding-right: 1em;
+}
 
 ul {
     margin-top: 1em;
@@ -224,13 +242,19 @@ ul {
     height: 2em;
 }
 
+#content {
+    margin-bottom: 2em;
+}
+
+#classification {
+    margin-top: 1em;
+    width: 60%;
+}
+
+
 .navigation_text, .navigation_text:visited {
     font-family: "Exo 2", "Times New Roman", serif;
     line-height: 2em;
-}
-
-#content {
-    margin-bottom: 2em;
 }
 
 .button {

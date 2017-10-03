@@ -1,7 +1,7 @@
 {% extends 'engine/base.html' %}
 
 {% block title %}
-    Methods | The Existential Risk Research Archive | www.x-risk.net
+    Methods | The Existential Risk Research Assessment | www.x-risk.net
 {% endblock %}
 
 {% block css %}{% load staticfiles %}
@@ -12,12 +12,12 @@
 {% block content %}
 
     <h1>Methods</h1>
-    <p>Different topics have different search strategies (keywords that we used to search for publications) and different inclusion criteria (criteria that we used to assess publications as "relevant" or "not relevant" for inclusion in the bibliography).</p>
+    <p>Different topics have different search strategies (the keywords that we used to search for publications) and different inclusion criteria (the criteria that we used to assess publications as "relevant" or "not relevant" for inclusion in the bibliography).</p>
 
-    <h1>Topic: Existential risk</h1>
-    <p>This topic is about research that can be generalized across multiple existential risks, as opposed to research that is specific to a single risk. However, it is possible for relevant publications to discuss a single risk as an example of existential risk in general<a href="#1"><sup>1</sup></a>.</p>
+    <h1>Topic: Existential risk and global catastrophic risk</h1>
+    <p>This topic is about research that can be generalized across multiple risks, as opposed to research that is specific to a single risk. However, it is possible for relevant publications to discuss a single risk as an example of risk in general<a href="#1"><sup>1</sup></a>.</p>
     <p>It is also possible for relevant publications to assess the probability or impact of a single risk, or to discuss a strategy for managing a single risk, in a way that is comparable to other risks. Indeed, we intend these publications to be used for evidence-based comparisons of probabilities, impacts, and management strategies across multiple risks.
-    <p>Relevant publications for this topic get tagged as being relevant not only to existential risk in general but also to the specific risk(s) that they discuss. However, we are also planning to do separate searches for each specific risk, using risk-specific search terms.</p>
+    <p>Relevant publications for this topic should be tagged as relevant not only to existential risk or global catastrophic risk in general but also to the specific risk(s) that they discuss, if possible. The specific risks that we are focused on are highlighted in yellow in Figure 1, below. We are also planning to do separate searches for each specific risk, using risk-specific search terms.</p>
 
     <h2>Inclusion Criteria</h2>
     <p>Relevant publications should include at least one item from the following list.</p>
@@ -29,8 +29,62 @@
       <li>Philosophical discussion that is relevant to these risks (e.g., the "value" of the future lives that would be saved by preventing the extinction of the human species)</li>
     </ul>
 
+    <h2>Figure 1: Categories of Risks</h2>
+    <p>These categories are defined by the cause of human extinction (or the cause of the end of human civilization as we know it). The Existential Risk Research Assessment is focused on ten of these fifteen categories (highlighted in yellow).</p>
+    <a href="{% static 'classification.jpg' %}"><img id="classification" src="{% static 'classification.jpg' %}" alt="classification" /></a>
+
+    <h2>Notes on the Categories of Risks</h2>
+
+    <h3>Ecological collapse</h3>
+    <div class="indented">
+      <h3>Climate change (non-toxic pollution)</h3>
+      <p>This category is about changes in biogeochemical cycles (such as the carbon cycle). These changes are not themselves toxic to humans (e.g., the carbon dioxide in the atmosphere is breathable), but the effects of these changes (e.g., catastrophic climate change) could cause human extinction or the end of human civilization. This differentiates this category from "toxic pollution". Publications about atmospheric pollutants and holes in the ozone layer should also be in this category.</p>
+
+      <h3>Ecosystem failure</h3>
+      <p>This category is about the loss of ecosystem services (such as food production) as a consequence of ecosystem-service loss (biodiversity loss beyond an ecological tipping point). It may be difficult to differentiate this category from "climate change" (climate regulation is also an ecosystem service), but publications about climate change as a consequence of burning fossil fuels (as opposed to biodiversity loss) should not be in this category. Publications about ecosystem-service failure as a consequence of another catastrophe (e.g., nuclear winter, super-volcano, asteroid impact, or climate change) should not be in this category unless they are about biodiversity loss (e.g., as opposed to crop failure through heat, drought, or photosynthesis failure).</p>
+
+      <h3>Toxic pollution</h3>
+      <p>We are not focusing on this category, but it is about pollutants as a direct cause of human extinction or the end of human civilization (not as a cause of biodiversity loss or a cause of climate change).</p>
+    </div>
+
+    <h3>Societal collapse</h3>
+    <div class="indented">
+      <h3>Behaviour change</h3>
+      <p>We are not focusing on this category, but it is about the end of human civilization through behaviour change. Publications about humans deciding not to reproduce or deciding not to live in a society would be in this category.</p>
+      <h3>Totalitarianism</h3>
+      <p>We are not focusing on this category, but it is about the end of human civilization through totalitarianism (e.g., permanent oppression). Publications about other forms of governance failure (e.g., "the tragedy of the commons") should be in the category for the risk to which the governance failure is relevant (e.g., "climate change" or "ecosystem failure").</p>
+      <h3>War or terrorism</h3>
+      <p>This category is about the end of human civilization through conflict. Publications about weapons of mass destruction (e.g., biological, chemical, or nuclear weapons) or their consequences (e.g., nuclear winter) should be in this category.</p>
+    </div>
+
+    <h3>Technological collapse</h3>
+    <div class="indented">
+      <h3>Artificial intelligence</h3>
+      <p>Publications about superintelligence should be in this category (but publications on lethal autonomous weapons could also be in "war or terrorism").</p>
+      <h3>Biotechnology</h3>
+      <p>Publications about synthetic biology and genetic engineering should be in this category (e.g., CRISPR).</p>
+      <h3>Other novel technology</h3>
+      <p>Publications about physics accidents should be in this category (e.g., the Large Hadron Collider). Publications about geoengineering accidents should also be in this category (and possibly also in "climate change"). Publications about molecular nanotechnology should also be in this category (e.g., grey goo).</p>
+      <h3>System failure</h3>
+      <p>This category is about the end of human civilization through the failure of the technological systems upon which it depends (e.g., the electrical grid or the internet). Publications about the failure of food supply chains should be in this category.</p>
+    </div>
+
+    <h3>Non-anthropogenic risks</h3>
+    <div class="indented">
+      <h3>Alien intelligence</h3>
+      <p>We are not focusing on this category, but publications about alien superintelligence (as a counterpoint to artificial intelligence) would be in this category. Publications about non-intelligent alien life would be in "biological disaster".</p>
+      <h3>Biological disaster</h3>
+      <p>Publications about (natural, non-engineered) pandemic diseases (e.g. ebola, influenza, or smallpox) should be in this category.</p>
+      <h3>Cosmic disaster</h3>
+      <p>Publications about asteroid impacts, gamma-ray bursts, solar flares, and other cosmic phenomena should be in this category.</p>
+      <h3>Geological disaster</h3>
+      <p>Publications about super-volcanoes should be in this category.</p>
+      <h3>Simulation shutdown</h3>
+      <p>We are not focusing on this category, but publications about the end of a simulated universe (e.g., "the matrix") would be in this category.</p>
+    </div>
+
     <h2>Search Strategy</h2>
-    <p>The search strategy for this topic is based on the "Global Challenges Bibliography" in Appendix 1 of <span class="italic">Global Challenges: 12 Risks that Threaten Human Civilization</span><a href="#2"><sup>2</sup></a>, which included publiations up to 2013. We used the keywords that were reported in Appendix 1 to search the titles, abstracts, keywords, and references of publications in Scopus. We then compared our search results with the publications in Appendix 1. If a publication in Appendix 1 was not in the search results, but it was in Scopus, then we added keywords that would find this publication (unless there were no keywords that seemed specific enough to existential risk to justify their use). Using this extended set of keywords, we then searched Scopus again, and we continue to search Scopus<a href="#3"><sup>3</sup></a> regularly for new publications.
+    <p>The search strategy for this topic is based on the "Global Challenges Bibliography" in Appendix 1 of <span class="italic">Global Challenges: 12 Risks that Threaten Human Civilization</span><a href="#2"><sup>2</sup></a>, which included publications up to 2013. We used the keywords that were reported in Appendix 1 to search the titles, abstracts, keywords, and references of publications in Scopus. We then compared our search results with the publications in Appendix 1. If a publication in Appendix 1 was not in the search results, but it was in Scopus, then we added keywords that would find this publication (unless there were no keywords that seemed specific enough to existential risk to justify their use). Using this extended set of keywords, we then searched Scopus again, and we continue to search Scopus<a href="#3"><sup>3</sup></a> regularly for new publications.
 
     <p>As noted in Appendix 1, the literature on specific risks (e.g., climate change) is "too voluminous to catalogue", and this is one reason that we have limited this topic to general-interest publications</span><a href="#4"><sup>4</sup></a>. Another reason is that studying multiple risks at the same time should enable us to make comparisons between these risks, think about interactions between them, and suggest strategies for managing multiple risks.</p>
 
@@ -50,28 +104,8 @@
     <p>Details of the machine-learning algorithm will be published as soon as it is up and running! At present, we are still building the training set. Please <a href="{% url 'signup' %}">sign up</a> if you would like to help.</p>
 
 
-<h1>Topic: Artificial intelligence</h1>
-<p>TBA</p>
-<h1>Topic: Asteroid impact</h1>
-<p>TBA</p>
-<h1>Topic: Bad global governance</h1>
-<p>TBA</p>
-<h1>Topic: Catastrophic climate change</h1>
-<p>TBA</p>
-<h1>Topic: Ecological collapse</h1>
-<p>TBA</p>
-<h1>Topic: Global system collapse</h1>
-<p>TBA</p>
-<h1>Topic: Nanotechnology</h1>
-<p>TBA</p>
-<h1>Topic: Nuclear war</h1>
-<p>TBA</p>
-<h1>Topic: Pandemic</h1>
-<p>TBA</p>
-<h1>Topic: Super volcano</h1>
-<p>TBA</p>
-<h1>Topic: Synthetic biology</h1>
-<p>TBA</p>
+<h1>Other topics</h1>
+<p>To be announced</p>
 
 <h1>Notes</h1>
 <p><sup id="1">1</sup>For a definition of global catastrophic risks and existential risks (which are a subset of global catastrophic risks), please see Bostrom, N., &Cacute;irkovi&cacute;, M.M. (2008). <span class="italic">Global Catastrophic Risks</span>. Oxford University Press, Oxford.</p>

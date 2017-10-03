@@ -45,6 +45,23 @@ def instructions(request):
     return render(request, 'engine/instructions.html')
 
 
+@login_required
+def your_assessments(request):
+    return render(request, 'engine/your_assessments.html')
+
+
+@login_required
+def scoreboard(request):
+    scoreboard = []
+    assessors = User.objects.distinct().filter(assessment__in=Assessment.objects.all())
+    for assessor in assessors:
+        publication_count = Publication.objects.distinct().filter(
+            assessment__in=Assessment.objects.filter(assessor=assessor)
+        ).count()
+        scoreboard.append({'first_name': assessor.first_name, 'last_name': assessor.last_name, 'institution': assessor.profile.institution, 'publication_count': publication_count})
+    return render(request, 'engine/scoreboard.html', {'scoreboard': scoreboard})
+
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -185,7 +202,7 @@ def topics(request, slug, state='default'):
             )
 
         # Publications that this user has assessed as relevant or irrelevant
-        elif (state == 'assessed'):
+        elif (state == 'assessed') or (state == 'default'):
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
                     topic=search_topic,
@@ -202,20 +219,12 @@ def topics(request, slug, state='default'):
                 )
             )
 
-        elif (state == 'default'):
-        # The publicly-available view: this queryset is different than the queryset that was used above and for the sidebar. It gets all publications that have been assessed as relevant to a topic, whether or not they were found by a search for this topic (it is possible for publications found by a search for one topic to also be assessed as relevant to another topic).
-            publications = Publication.objects.distinct().filter(
-                assessment__in=Assessment.objects.filter(
-                    topic=search_topic, is_relevant=True
-                )
-            )
-
-    # If the user is not authenticated, there is only the publicly-available view.
+    # If the user is not authenticated, there is only the publicly-available default view.
     else:
         publications = Publication.objects.distinct().filter(
             assessment__in=Assessment.objects.filter(
                 topic=search_topic, is_relevant=True
-            )
+            ).order_by('title')
         )
 
     page = request.GET.get('page', 1)
@@ -254,7 +263,7 @@ def assessments(request, slug, pk):
     """
     assessor = request.user
     search_topic = Topic.objects.get(slug=slug)  # This topic
-    topics = Topic.objects.all()  # All topics
+    other_topics = Topic.objects.exclude(slug=slug)  # Other topics
     pk = int(pk)
 
     # The publication that is going to be assessed
@@ -279,21 +288,50 @@ def assessments(request, slug, pk):
     except:
         next_pk = assessment_order[0]
 
-    # Initial data for the AssessmentFormSet (one form for each topic)
-    #initial = [{'topic': search_topic}]  # Comment this line and uncomment the next to show tick boxes for all topics (not only the search_topic).
-    initial = [{'topic': topic} for topic in topics]
+    # If any new topics were added to the Topic model after this publication was assessed, then they will not display correctly, and so we need to know whether or not this publication has been assessed by this user.
+    if Assessment.objects.filter(publication=publication, assessor=assessor).exists():
+        assessed_topics = Topic.objects.filter(
+            assessment__in=Assessment.objects.filter(
+                    publication=publication, assessor=assessor
+                )
+        )
+        unassessed_topics = Topic.objects.exclude(
+            assessment__in=Assessment.objects.filter(
+                    publication=publication, assessor=assessor
+                )
+        )
+        # Initial data for the AssessmentFormSet (one form for each topic)
+        initial = [{'topic': topic} for topic in unassessed_topics]
+    else:
+        initial = [{'topic': topic} for topic in other_topics]
 
     AssessmentFormSet = modelformset_factory(Assessment, form=AssessmentForm,
-        extra=len(initial), max_num=len(initial))
+        extra=len(initial), max_num=len(other_topics))
 
     if request.method == 'POST':
-        assessment_formset = AssessmentFormSet(request.POST)
+        assessment_form = AssessmentForm(request.POST, prefix="search_topic")
+        assessment_formset = AssessmentFormSet(request.POST, prefix="other_topics")
 
-        if assessment_formset.is_valid():
+        if assessment_form.is_valid() and assessment_formset.is_valid():
             old_assessments = []
             new_assessments = []
 
             if 'save' in request.POST:
+
+                is_relevant = assessment_form.cleaned_data.get('is_relevant')
+
+                # If this user has already assessed the relevance of this publication to the search_topic, append the pk of the old assessment to the old_assessments list. Assessments in this list will be bulk deleted.
+                if Assessment.objects.filter(publication=publication, assessor=assessor, topic=search_topic).exists():
+                    old_assessments.append(Assessment.objects.get(
+                        assessor=assessor, publication=publication,
+                            topic=search_topic).pk)
+
+                # Append a new instance of the Assessment model to the new_assessments list. Assessments in this list will be bulk created.
+                new_assessments.append(Assessment(publication=publication,
+                                                  is_relevant=is_relevant,
+                                                  topic=search_topic,
+                                                  assessor=assessor))
+
                 for assessment_form in assessment_formset:
                     is_relevant = assessment_form.cleaned_data.get('is_relevant')
                     topic = assessment_form.cleaned_data.get('topic')
@@ -302,10 +340,10 @@ def assessments(request, slug, pk):
                     if Assessment.objects.filter(assessor=assessor,
                         publication=publication, topic=topic).exists():
                             old_assessments.append(Assessment.objects.get(
-                                assessor=assessor,publication=publication,
+                                assessor=assessor, publication=publication,
                                     topic=topic).pk)
 
-                    # If this user has not assessed the relevance of this publication to this topic, append a new instance of the Assessment model to the new_assessments list. Assessments in this list will be bulk created.
+                    # Append a new instance of the Assessment model to the new_assessments list. Assessments in this list will be bulk created.
                     new_assessments.append(Assessment(publication=publication,
                                                       is_relevant=is_relevant,
                                                       topic=topic,
@@ -322,6 +360,7 @@ def assessments(request, slug, pk):
                         completed_assessments.append(pk)
                         item.completed_assessments = completed_assessments
                     item.save()
+                return HttpResponseRedirect(reverse('assessments', args=(), kwargs={'slug': search_topic.slug, 'pk': next_assessment}))
 
             if 'reset' in request.POST:
                 with transaction.atomic():
@@ -331,23 +370,27 @@ def assessments(request, slug, pk):
                         completed_assessments.remove(pk)
                         item.completed_assessments = completed_assessments
                         item.save()
+                return HttpResponseRedirect(reverse('assessments', args=(), kwargs={'slug': search_topic.slug, 'pk': pk}))
 
             if 'pass' in request.POST:
                 next_assessment = get_next_assessment(pk, next_pk, assessment_order, completed_assessments)
                 item.next_assessment = next_assessment
                 item.save()
-
                 return HttpResponseRedirect(reverse('assessments', args=(), kwargs={'slug': search_topic.slug, 'pk': next_assessment}))
-
-            return HttpResponseRedirect(reverse('assessments', args=(), kwargs={'slug': search_topic.slug, 'pk': pk}))
 
     else:
         assessment_formset = AssessmentFormSet(initial=initial,
-            queryset=Assessment.objects.filter(publication=publication,
-                assessor=assessor))
+                queryset=Assessment.objects.filter(publication=publication,
+                    assessor=assessor).exclude(topic=search_topic), prefix="other_topics")
+        if Assessment.objects.filter(publication=publication, assessor=assessor, topic=search_topic).exists():
+                assessment = Assessment.objects.get(publication=publication, assessor=assessor, topic=search_topic)
+                assessment_form = AssessmentForm(instance=assessment, prefix="search_topic")
+        else:
+            assessment_form = AssessmentForm(initial={'topic': search_topic}, prefix="search_topic")
 
     context = {
         'publication': publication,
+        'assessment_form': assessment_form,
         'assessment_formset': assessment_formset,
         'next_pk': next_pk,
         'previous_pk': previous_pk,
@@ -355,7 +398,7 @@ def assessments(request, slug, pk):
         'publications_count': publications_count,
         'publications_assessed_count': publications_assessed_count,
         'publications_assessed_percent': publications_assessed_percent,
-        'next_assessment': next_assessment
+        'next_assessment': next_assessment,
     }
 
     return render(request, 'engine/assessments.html', context)
@@ -370,11 +413,23 @@ def get_status(assessor, search_topic):
 
     # If an assessment_order has been created for this user and topic, get it from the database.
     if AssessmentStatus.objects.filter(assessor=assessor, topic=search_topic).exists():
-        # TODO: Check if new publications have been added to the database (pks greater than the largest pk in assessment_order), and randomly append their pks to the end of this pk_order.
         item = AssessmentStatus.objects.get(assessor=assessor, topic=search_topic)
         assessment_order = literal_eval(item.assessment_order)
         next_assessment = item.next_assessment
         completed_assessments = literal_eval(item.completed_assessments)
+
+        # If new publications have been added to the database, then randomly append their pks to the end of assessment_order.
+        publication_count = len(assessment_order)
+        new_publication_count = Publication.objects.filter(search_topics=search_topic).count()
+
+        if publication_count < new_publication_count:
+            pks = Publication.objects.filter(search_topics=search_topic).values_list('pk', flat=True)
+            new_publications = list(pks)
+            new_publications = list(set(new_publications) - set(assessment_order))
+            shuffle(new_publications)
+            assessment_order = assessment_order + new_publications
+            item.assessment_order = assessment_order
+            item.save()
 
     # If an assessment_order has not been created for this user and topic, create it and save it in the database.
     else:

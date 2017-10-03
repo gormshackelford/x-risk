@@ -1,22 +1,23 @@
 <h1>{{ search_topic.topic|capfirst }}</h1>
 
-<p>Please help us to assess the results of our search for publications about this topic.</p>
+<p><a href="{% url 'assessments' slug=search_topic.slug pk=next_assessment %}">Your next assessment</a> <span class="warning">(start or restart here)</span></p>
 
 <p>
-  <span class="bold">Publications:</span> {{ publications_count }}
-  <br /><span class="bold">Assessments:</span> {{ publications_assessed_count }} ({{ publications_assessed_percent }}% complete)
-</p>
-
-<p>Your <a href="{% url 'assessments' slug=search_topic.slug pk=next_assessment %}">assessments</a> <span class="warning">(start or restart here)</span><sup>1</sup></p>
-
-<p>
-  Your <a href="{% url 'topics' slug=search_topic.slug state='relevant' %}">relevant publications</a>
-  <br />Your <a href="{% url 'topics' slug=search_topic.slug state='irrelevant' %}">irrelevant publications</a>
+  Publications: {{ publications_count }}
+  <br />Assessments: {{ publications_assessed_count }} ({{ publications_assessed_percent }}% complete)
 </p>
 
 <p>
-  Your <a href="{% url 'topics' slug=search_topic.slug state='assessed' %}">assessed publications</a>
-  <br />Your <a href="{% url 'topics' slug=search_topic.slug state='unassessed' %}">unassessed publications</a>
+  <a href="{% url 'topics' slug=search_topic.slug state='relevant' %}">Your relevant publications</a>
+  <br /><a href="{% url 'topics' slug=search_topic.slug state='irrelevant' %}">Your irrelevant publications</a>
 </p>
 
-<p><sup>1</sup>Please see the <a href="{% url 'instructions' %}">Assessment Instructions</a> for more information.</p>
+<p>
+  <a href="{% url 'topics' slug=search_topic.slug state='assessed' %}">Your assessed publications</a>
+  <br /><a href="{% url 'topics' slug=search_topic.slug state='unassessed' %}">Your unassessed publications</a>
+</p>
+
+<p>
+  <a href="{% url 'topics' slug=search_topic.slug %}">All relevant publications</a>
+  <br /><a href="{% url 'scoreboard' %}">Scoreboard</a>
+</p>

@@ -19,6 +19,9 @@ class Topic(models.Model):
     def __str__(self):
         return self.topic
 
+    class Meta:
+        ordering = ['topic']
+
 
 class Source(models.Model):
     source = models.CharField(max_length=254)

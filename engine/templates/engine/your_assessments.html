@@ -1,0 +1,28 @@
+{% extends 'engine/base.html' %}
+
+
+{% block title %}
+  Your Assessments | X-Risk Research Network | www.x-risk.net
+{% endblock %}
+
+
+{% block css %}
+  {% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Your Assessments</h1>
+<p>To start or restart an assessment, click the link to the bibliography that you want to assess (e.g., "Existential risk"), on the right side of the screen. Before you start, please read the <a href="{% url 'instructions' %}">Assessment Instructions</a>.</p>
+
+<h1>Scoreboard</h1>
+<p>The <a href="{% url 'scoreboard' %}">Scoreboard</a> shows the number of publications that you and others have assessed. Anyone who assesses 500 or more publications will eligible to be a co-author of a future publication about The Existential Risk Research Assessment. We expect that it will take you 2-3 workdays to assess 500 publications. We want to assess about 10,000 publications for the search on general existential risks. The more you assess, the better!</p>
+
+{% endblock %}
+
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}
