@@ -54,6 +54,7 @@ for result in df.itertuples():
             continue  # Go to the next result.
 
     title = result.Title
+    year = result.Year
     if title != '':
         title = re.sub('<[^<]+?>', '', title)  # Strip html tags from the title.
         # If a publication with this title and year is already in the database, do not add it, but do update it with this search topic.
@@ -66,7 +67,6 @@ for result in df.itertuples():
 
     abstract = result.Abstract
     author_string = result.Authors
-    year = result.Year
     journal = result.Journal
     volume = result.Volume
     issue = result.Issue
