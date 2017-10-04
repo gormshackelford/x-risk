@@ -22,7 +22,7 @@ topic = Topic.objects.get(topic="existential risk")
 
 # Load a csv file with results from a Scopus search (on the Scopus website, not
 # using the API).
-csv = "datasets/scopus/Scopus Search 2/2011.csv"
+csv = "data/scopus/existential_risk/2011.csv"
 df = pd.read_csv(csv, encoding='utf-8')
 
 df = df.rename(columns={
@@ -48,18 +48,22 @@ publications = Publication.objects.values('title','doi')
 for result in df.itertuples():
     doi = result.DOI
     if doi != '':
-        # If this doi is already in the database, do not add it.
+        # If a publication with this doi is already in the database, do not add it, but do update it with this search and search topic.
         if publications.filter(doi__iexact=doi).exists():
-            # TODO: Add this topic to the publication with this doi.
-            continue
+            record = Publication.objects.get(doi=doi)
+            record.searches.add(search)
+            record.search_topics.add(topic)
+            continue  # Go to the next result.
 
     title = result.Title
     if title != '':
         title = re.sub('<[^<]+?>', '', title)  # Strip html tags from the title.
-        # If this title is already in the database, do not add it.
-        # TODO: This assumes that titles are unique. Add fuzzy matching.
-        if publications.filter(title__iexact=title).exists():
-            continue
+        # If a publication with this title and year is already in the database, do not add it, but do update it with this search and search topic.
+        if publications.filter(title__iexact=title, year__iexact=year).exists():
+            record = Publication.objects.get(title=title, year=year)
+            record.searches.add(search)
+            record.search_topics.add(topic)
+            continue  # Go to the next result.
     else:  # If this publication has no title, do not add it to the database.
         continue
 

@@ -34,7 +34,7 @@ for result in results:
             record = Publication.objects.get(doi=doi)
             record.searches.add(search)
             record.search_topics.add(topic)
-            continue  # Go to the next result in results.
+            continue  # Go to the next result.
 
     title = result.get('dc:title', '')  # Blank if 'dc:title' does not exist
 
@@ -43,13 +43,12 @@ for result in results:
 
     if title != '':
         title = re.sub('<[^<]+?>', '', title)  # Strip html tags from the title.
-
         # If a publication with this title and year is already in the database, do not add it, but do update it with this search and search topic.
         if publications.filter(title__iexact=title, year__iexact=year).exists():
             record = Publication.objects.get(title=title, year=year)
             record.searches.add(search)
             record.search_topics.add(topic)
-            continue  # Go to the next result in results.
+            continue  # Go to the next result.
 
     abstract = result.get('dc:description', '')
     journal = result.get('prism:publicationName', '')

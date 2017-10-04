@@ -16,5 +16,5 @@ Relevance.ipynb
 search_scopus.ipynb
 AssessmentOrder.ipynb
 .ipynb_checkpoints/
-/datasets
+/data
 delete_all_publications.py
