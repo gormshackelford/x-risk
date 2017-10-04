@@ -21,3 +21,7 @@
   <a href="{% url 'topics' slug=search_topic.slug %}">All relevant publications</a>
   <br /><a href="{% url 'scoreboard' %}">Scoreboard</a>
 </p>
+
+{% if search_topic.topic == 'existential risk' %}
+  {% include 'engine/existential_risk_sidebar.html' %}
+{% endif %}

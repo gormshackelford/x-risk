@@ -20,7 +20,7 @@
 
   <h2>Relevance</h2>
 
-  <p>If you think this publication is relevant to existential risk, based on its title and abstract, please tick the box below.</p>
+  <p>If you think this publication is relevant to existential risk (based on its title and abstract), then please tick the box below. Please refer to the inclusion criteria, when making your assessment.</p>
 
   <form method="POST">
     {% csrf_token %}
@@ -51,7 +51,7 @@
       </tr>
     </table>
 
-    <p>If you ticked the box above, please also tick the box below for each category of existential risk to which you think this publication is relevant (if there are any). Please see the <a href="{% url 'methods' %}">Methods</a> for information on these categories.</p>
+    <p>If you ticked the box above, then please also tick the box below for each category of existential risk to which you think this publication is relevant (if there are any). Please see the <a href="{% url 'methods' %}">Methods</a> for information on these categories.</p>
 
     {{ assessment_formset.management_form }}
     <table class="assessment">
