@@ -17,11 +17,10 @@ import pandas as pd
 import re
 from engine.models import Topic, Publication
 
-# Set the search and topic
+# Set the topic.
 topic = Topic.objects.get(topic="existential risk")
 
-# Load a csv file with results from a Scopus search (on the Scopus website, not
-# using the API).
+# Load a csv file with results from a Scopus search (on the Scopus website, not using the API).
 csv = "data/scopus/existential_risk/2011.csv"
 df = pd.read_csv(csv, encoding='utf-8')
 
@@ -31,7 +30,7 @@ df = df.rename(columns={
     'Page end': 'Page_end'
 })
 
-# Clean the data (replace Scopus placeholders with '')
+# Clean the data (replace Scopus placeholders with '').
 df.Authors.replace('[No author name available]', '', inplace=True)
 df.Abstract.replace('[No abstract available]', '', inplace=True)
 df.DOI = df.DOI.fillna(value='')
@@ -42,26 +41,24 @@ df.Issue = df.Issue.fillna(value='')
 df.Page_start = df.Page_start.fillna(value='')
 df.Page_end = df.Page_end.fillna(value='')
 
-# Get data on all publications that are already in the database
+# Get the data on all publications that are already in the database.
 publications = Publication.objects.values('title','doi')
 
 for result in df.itertuples():
     doi = result.DOI
     if doi != '':
-        # If a publication with this doi is already in the database, do not add it, but do update it with this search and search topic.
+        # If a publication with this doi is already in the database, do not add it, but do update it with this search topic.
         if publications.filter(doi__iexact=doi).exists():
             record = Publication.objects.get(doi=doi)
-            record.searches.add(search)
             record.search_topics.add(topic)
             continue  # Go to the next result.
 
     title = result.Title
     if title != '':
         title = re.sub('<[^<]+?>', '', title)  # Strip html tags from the title.
-        # If a publication with this title and year is already in the database, do not add it, but do update it with this search and search topic.
+        # If a publication with this title and year is already in the database, do not add it, but do update it with this search topic.
         if publications.filter(title__iexact=title, year__iexact=year).exists():
             record = Publication.objects.get(title=title, year=year)
-            record.searches.add(search)
             record.search_topics.add(topic)
             continue  # Go to the next result.
     else:  # If this publication has no title, do not add it to the database.
