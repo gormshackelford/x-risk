@@ -162,7 +162,7 @@ def profile(request):
 def topics(request, slug, state='default'):
     """
     This view has alternative states. It displays publications for a topic, but it can display different subsets of these publications:
-    (1) [DEFAULT] Publications that have been assessed as relevant by any user: this is the publicly-available list of publications on this topic [if user is not authenticated OR if the state variable is not passed to this view (state='default')]
+    (1) [Default] Publications that have been assessed as relevant by any user: this is the publicly-available list of publications on this topic [if user is not authenticated OR if the state variable is not passed to this view (state='default')]
     (2) Publications that have not been assessed by this user [if user is authenticated AND state='unassessed']
     (3) Publications that have been assessed by this user [if user is authenticated AND state='assessed']
     (4) Publications that have been assessed as relevant by this user [if user is authenticated AND state='relevant']
@@ -181,8 +181,8 @@ def topics(request, slug, state='default'):
         publications_assessed_count = status.get('publications_assessed_count')
         publications_assessed_percent = status.get('publications_assessed_percent')
 
-        # Publications that this user has assessed as relevant (in contrast to those that all assessors assessed as relevant, which is the DEFAULT for this view)
-        if (state == 'relevant'):
+        # Publications that this user has assessed as relevant (in contrast to those that any user assessed as relevant, which is the default for this view if the user is not authenticated)
+        if (state == 'relevant') or (state == 'default'):
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
                     topic=search_topic,
@@ -202,7 +202,7 @@ def topics(request, slug, state='default'):
             )
 
         # Publications that this user has assessed as relevant or irrelevant
-        elif (state == 'assessed') or (state == 'default'):
+        elif (state == 'assessed'):
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
                     topic=search_topic,
