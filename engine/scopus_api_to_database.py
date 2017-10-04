@@ -74,6 +74,22 @@ for result in results:
     except:
         author_string = ''
 
+    # Check that the data do not exceed the maximum lengths in the database. They should not, except in the case of errors in the data (or metadata in the same field). If the length is exceeded, delete the excess.
+    if len(title) > 510:
+        title = title[0:510]
+    if len(year) > 30:
+        year = year[0:30]
+    if len(journal) > 254:
+        journal = journal[0:254]
+    if len(issue) > 30:
+        issue = issue[0:30]
+    if len(volume) > 30:
+        volume = volume[0:30]
+    if len(pages) > 30:
+        pages = pages[0:30]
+    if len(doi) > 254:
+        doi = ''  # A broken DOI will not work, whereas truncated data in the the other fields could be informative.
+
     record = Publication(
         title=title,
         abstract=abstract,
