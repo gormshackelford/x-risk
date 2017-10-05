@@ -224,7 +224,7 @@ def topics(request, slug, state='default'):
                 assessment__in=Assessment.objects.filter(
                     topic=search_topic, is_relevant=True
                 )
-            )
+            ).order_by('title')
 
     # If the user is not authenticated, there is only the publicly-available default view.
     else:
@@ -232,7 +232,7 @@ def topics(request, slug, state='default'):
             assessment__in=Assessment.objects.filter(
                 topic=search_topic, is_relevant=True
             )
-        )
+        ).order_by('title')
 
     page = request.GET.get('page', 1)
     paginator = Paginator(publications, 10)
