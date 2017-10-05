@@ -181,8 +181,8 @@ def topics(request, slug, state='default'):
         publications_assessed_count = status.get('publications_assessed_count')
         publications_assessed_percent = status.get('publications_assessed_percent')
 
-        # Publications that this user has assessed as relevant (in contrast to those that any user assessed as relevant, which is the default for this view if the user is not authenticated)
-        if (state == 'relevant') or (state == 'default'):
+        # Publications that this user has assessed as relevant (in contrast to those that any user assessed as relevant, which is the default for this view)
+        if (state == 'relevant'):
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
                     topic=search_topic,
@@ -219,12 +219,19 @@ def topics(request, slug, state='default'):
                 )
             )
 
+        else:
+            publications = Publication.objects.distinct().filter(
+                assessment__in=Assessment.objects.filter(
+                    topic=search_topic, is_relevant=True
+                )
+            )
+
     # If the user is not authenticated, there is only the publicly-available default view.
     else:
         publications = Publication.objects.distinct().filter(
             assessment__in=Assessment.objects.filter(
                 topic=search_topic, is_relevant=True
-            ).order_by('title')
+            )
         )
 
     page = request.GET.get('page', 1)

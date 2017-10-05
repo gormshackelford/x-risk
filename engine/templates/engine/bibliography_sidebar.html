@@ -1,5 +1,9 @@
 <h1>Bibliography</h1>
 
-<p><a href="{% url 'topics' slug='existential-risk' %}">Existential risk</a><span class="warning"> (work in progress)</span></p>
+{% if user.is_authenticated %}
+  <p><a href="{% url 'topics' slug='existential-risk' state='relevant' %}">Existential risk</a><span class="warning"> (work in progress)</span></p>
+{% else %}
+  <p><a href="{% url 'topics' slug='existential-risk' %}">Existential risk</a><span class="warning"> (work in progress)</span></p>
+{% endif %}
 
 <p>Other bibliographies to be announced for specific x-risks (e.g., artificial intelligence or asteroid impact)</p>
