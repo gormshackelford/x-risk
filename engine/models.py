@@ -77,6 +77,18 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
+    def split_author(self):
+        split_author = self.author.split(',')
+        author_list = []
+        for author in split_author:
+            split_name = author.split(' ')
+            split_name = list(filter(None, split_name))  # Delete the blanks.
+            author_list.append(split_name)
+        return author_list
+
+    def split_pages(self):
+        return self.pages.split('-')
+
     @property
     def google_string(self):
         string = quote_plus(self.title)

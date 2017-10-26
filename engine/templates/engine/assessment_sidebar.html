@@ -18,8 +18,8 @@
 </p>
 
 <p>
-  <a href="{% url 'topics' slug=search_topic.slug %}">All relevant publications</a>
-  <br /><a href="{% url 'scoreboard' %}">Scoreboard</a>
+  <a href="{% url 'scoreboard' %}">Scoreboard</a>
+  <br /><a href="{% url 'topics' slug=search_topic.slug %}">All relevant publications</a> (<a href="{% url 'download_csv' slug=search_topic.slug %}">CSV</a> | <a href="{% url 'download_ris' slug=search_topic.slug %}">RIS</a>)
 </p>
 
 {% if search_topic.topic == 'existential risk' %}

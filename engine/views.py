@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.forms import modelformset_factory
 from django.db import transaction
@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template import loader
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from ast import literal_eval
@@ -19,6 +20,7 @@ from .tokens import account_activation_token
 from .models import Topic, Publication, Assessment, AssessmentStatus
 from .forms import AssessmentForm, SignUpForm, ProfileForm, UserForm
 import config
+import csv
 import json
 import urllib
 
@@ -159,6 +161,48 @@ def profile(request):
     return render(request, 'engine/profile.html', context)
 
 
+def download_csv(request, slug):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="bibliography.csv"'
+
+    search_topic = Topic.objects.get(slug=slug)
+
+    publications = Publication.objects.distinct().filter(
+        assessment__in=Assessment.objects.filter(
+            topic=search_topic,
+            is_relevant=True
+        )
+    )
+
+    writer = csv.writer(response, quoting=csv.QUOTE_ALL)
+    writer.writerow(['Authors', 'Year', 'Title', 'Journal', 'Volume', 'Issue', 'DOI'])
+    for publication in publications:
+        writer.writerow([publication.author, publication.year, publication.title, publication.journal, publication.volume, publication.issue, publication.doi])
+
+    return response
+
+
+def download_ris(request, slug):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/ris; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="bibliography.ris"'
+
+    search_topic = Topic.objects.get(slug=slug)
+
+    publications = Publication.objects.distinct().filter(
+        assessment__in=Assessment.objects.filter(
+            topic=search_topic,
+            is_relevant=True
+        )
+    )
+
+    t = loader.get_template('engine/ris_template.txt')
+    c = {'publications': publications}
+    response.write(t.render(c))
+    return response
+
+
 def topics(request, slug, state='default'):
     """
     This view has alternative states. It displays publications for a topic, but it can display different subsets of these publications:
@@ -189,7 +233,7 @@ def topics(request, slug, state='default'):
                     assessor=assessor,
                     is_relevant=True
                 )
-            )
+            ).order_by('title')
 
         # Publications that this user has assessed as irrelevant
         elif (state == 'irrelevant'):
@@ -199,7 +243,7 @@ def topics(request, slug, state='default'):
                     assessor=assessor,
                     is_relevant=False
                 )
-            )
+            ).order_by('title')
 
         # Publications that this user has assessed as relevant or irrelevant
         elif (state == 'assessed'):
@@ -208,7 +252,7 @@ def topics(request, slug, state='default'):
                     topic=search_topic,
                     assessor=assessor
                 )
-            )
+            ).order_by('title')
 
         # Publications that this user has not yet assessed
         elif (state == 'unassessed'):
@@ -217,7 +261,7 @@ def topics(request, slug, state='default'):
                     topic=search_topic,
                     assessor=assessor
                 )
-            )
+            ).order_by('title')
 
         else:
             publications = Publication.objects.distinct().filter(
