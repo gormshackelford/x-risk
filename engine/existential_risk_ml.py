@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import tflearn
-from django.db import transaction
+from django.db import connection, transaction
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from engine.models import Assessment, Publication, MLModel, MLPrediction, Topic
 from tensorflow.contrib import learn
@@ -110,8 +110,8 @@ INPUT_DIM = len(vocabulary)
 # Build the neural network.
 net = tflearn.input_data([None, N_FEATURES])
 # Word embedding
-net = tflearn.embedding(net, input_dim=INPUT_DIM, output_dim=32)
-net = tf.reshape(net, [-1, N_FEATURES, 32, 1])
+net = tflearn.embedding(net, input_dim=INPUT_DIM, output_dim=16)
+net = tf.reshape(net, [-1, N_FEATURES, 16, 1])
 # Convolutions
 net = tflearn.layers.conv.conv_2d(net, nb_filter=2, filter_size=[2,3], strides=[1,1,1,1], activation='relu')
 #net = tflearn.layers.conv.max_pool_2d(net, kernel_size=2)
@@ -123,7 +123,9 @@ net = tflearn.regression(net, optimizer='adam', learning_rate=0.001,
 
 # Train the network.
 nn = tflearn.DNN(net, tensorboard_verbose=0)
+connection.connection.ping()
 nn.fit(X_training, Y_training, validation_set=(X_test, Y_test), show_metric=True, batch_size=32)
+connection.connection.ping()
 
 pred_test = nn.predict(X_test)
 results_df = pd.DataFrame(pred_test)
@@ -136,7 +138,7 @@ labels_df = pd.DataFrame(Y_test)
 # precision (higher precision with higher threshold).
 
 # Find the threshold value by exploring a range of possible values.
-thresholds = np.arange(0.0, 0.5, 0.0001)
+thresholds = np.arange(0.0, 0.33, 0.0001)
 tradeoffs = []
 
 # For each possible value, get the recall, precision, and accuracy scores.
@@ -172,6 +174,7 @@ for threshold in thresholds:
     tradeoffs.append([threshold, accuracy, precision, recall])
 
     print("Threshold:", threshold)
+    connection.connection.ping()
 
 tradeoffs_df = pd.DataFrame(tradeoffs)
 tradeoffs_df.columns = ['threshold', 'accuracy', 'precision', 'recall']
@@ -232,12 +235,6 @@ for row in predictions_df.itertuples():
         topic=search_topic,
         prediction=row.p_relevant
     ))
-#TODO: Add human-assessed publications?
-#relevant_publications = Publication.objects.distinct().filter(
-#    assessment__in=Assessment.objects.filter(
-#        topic=search_topic,
-#        is_relevant=True
-#    ))
 with transaction.atomic():
     MLPrediction.objects.filter(topic=search_topic).delete()
     MLPrediction.objects.bulk_create(ML_predictions)
