@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Topic, Source, SearchString, Search, Publication, Assessment, Profile, AssessmentStatus
+from .models import Topic, Source, SearchString, Search, Publication, Assessment, Profile, AssessmentStatus, MLModel, MLPrediction
 
 admin.site.register(Topic)
 admin.site.register(Source)
@@ -9,3 +9,5 @@ admin.site.register(Publication)
 admin.site.register(Assessment)
 admin.site.register(Profile)
 admin.site.register(AssessmentStatus)
+admin.site.register(MLModel)
+admin.site.register(MLPrediction)
