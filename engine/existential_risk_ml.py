@@ -110,10 +110,11 @@ INPUT_DIM = len(vocabulary)
 # Build the neural network.
 net = tflearn.input_data([None, N_FEATURES])
 # Word embedding
-net = tflearn.embedding(net, input_dim=INPUT_DIM, output_dim=16)
-net = tf.reshape(net, [-1, N_FEATURES, 16, 1])
+net = tflearn.embedding(net, input_dim=INPUT_DIM, output_dim=32)
+net = tf.reshape(net, [-1, N_FEATURES, 32, 1])
 # Convolutions
 net = tflearn.layers.conv.conv_2d(net, nb_filter=2, filter_size=[2,3], strides=[1,1,1,1], activation='relu')
+# Uncomment the next line to add a max pool layer, which is commonly used after a convolution layer.
 #net = tflearn.layers.conv.max_pool_2d(net, kernel_size=2)
 # Dropout (to reduce overfitting)
 net = tflearn.layers.core.dropout(net, 0.5)
