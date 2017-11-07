@@ -358,13 +358,40 @@ def topics(request, slug, state='default'):
                 )
             ).order_by('title')
 
-    # If the user is not authenticated, there is only the publicly-available default view.
-    else:
-        publications = Publication.objects.distinct().filter(
-            assessment__in=Assessment.objects.filter(
-                topic=search_topic, is_relevant=True
-            )
-        ).order_by('title')
+    else:  # If the user is not authenticated
+        # Publications that the machine-learning algorithm has predicted to be relevant, with low recall, medium recall, or high recall
+        if (state == 'low_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.5
+            ).threshold
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD
+            ).order_by('title')
+
+        elif (state == 'medium_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.75
+            ).threshold
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD
+            ).order_by('title')
+
+        elif (state == 'high_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.95
+            ).threshold
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD
+            ).order_by('title')
+        else:
+            publications = Publication.objects.distinct().filter(
+                assessment__in=Assessment.objects.filter(
+                    topic=search_topic, is_relevant=True
+                )
+            ).order_by('title')
 
     page = request.GET.get('page', 1)
     paginator = Paginator(publications, 10)
