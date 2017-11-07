@@ -24,6 +24,9 @@ urlpatterns = [
     url(r'^confirm_email/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.confirm_email, name='confirm_email'),
     url(r'^download_csv/(?P<slug>[\w\-]+)/$', views.download_csv, name='download_csv'),
     url(r'^download_ris/(?P<slug>[\w\-]+)/$', views.download_ris, name='download_ris'),
+    url(r'^download_csv/(?P<slug>[\w\-]+)/(?P<state>[\w\-]+)/$', views.download_csv, name='download_csv'),
+    url(r'^download_ris/(?P<slug>[\w\-]+)/(?P<state>[\w\-]+)/$', views.download_ris, name='download_ris'),
+    url(r'^ml/$', views.ml, name='ml'),
 ]
 
 if settings.DEBUG:

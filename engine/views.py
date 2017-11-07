@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.forms import modelformset_factory
 from django.db import transaction
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -17,7 +18,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from ast import literal_eval
 from random import shuffle
 from .tokens import account_activation_token
-from .models import Topic, Publication, Assessment, AssessmentStatus
+from .models import Topic, Publication, Assessment, AssessmentStatus, MLModel
 from .forms import AssessmentForm, SignUpForm, ProfileForm, UserForm
 import config
 import csv
@@ -59,7 +60,7 @@ def scoreboard(request):
     for assessor in assessors:
         publication_count = Publication.objects.distinct().filter(
             assessment__in=Assessment.objects.filter(assessor=assessor)
-        ).count()
+        ).values_list('pk', flat=True).count()
         scoreboard.append({'first_name': assessor.first_name, 'last_name': assessor.last_name, 'institution': assessor.profile.institution, 'publication_count': publication_count})
     return render(request, 'engine/scoreboard.html', {'scoreboard': scoreboard})
 
@@ -161,19 +162,44 @@ def profile(request):
     return render(request, 'engine/profile.html', context)
 
 
-def download_csv(request, slug):
+def download_csv(request, slug, state='default'):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="bibliography.csv"'
 
     search_topic = Topic.objects.get(slug=slug)
 
-    publications = Publication.objects.distinct().filter(
-        assessment__in=Assessment.objects.filter(
+    if (state == 'low_recall'):
+        THRESHOLD = MLModel.objects.get(
             topic=search_topic,
-            is_relevant=True
+            target_recall=0.5
+        ).threshold
+        publications = Publication.objects.filter(
+            mlprediction__prediction__gte=THRESHOLD
+        ).order_by('title')
+    elif (state == 'medium_recall'):
+        THRESHOLD = MLModel.objects.get(
+            topic=search_topic,
+            target_recall=0.75
+        ).threshold
+        publications = Publication.objects.filter(
+            mlprediction__prediction__gte=THRESHOLD
+        ).order_by('title')
+    elif (state == 'high_recall'):
+        THRESHOLD = MLModel.objects.get(
+            topic=search_topic,
+            target_recall=0.95
+        ).threshold
+        publications = Publication.objects.filter(
+            mlprediction__prediction__gte=THRESHOLD
+        ).order_by('title')
+    else:  # If state='default'
+        publications = Publication.objects.distinct().filter(
+            assessment__in=Assessment.objects.filter(
+                topic=search_topic,
+                is_relevant=True
+            )
         )
-    )
 
     writer = csv.writer(response, quoting=csv.QUOTE_ALL)
     writer.writerow(['Authors', 'Year', 'Title', 'Journal', 'Volume', 'Issue', 'DOI'])
@@ -183,24 +209,56 @@ def download_csv(request, slug):
     return response
 
 
-def download_ris(request, slug):
+def download_ris(request, slug, state='default'):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/ris; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="bibliography.ris"'
 
     search_topic = Topic.objects.get(slug=slug)
 
-    publications = Publication.objects.distinct().filter(
-        assessment__in=Assessment.objects.filter(
+    if (state == 'low_recall'):
+        THRESHOLD = MLModel.objects.get(
             topic=search_topic,
-            is_relevant=True
+            target_recall=0.5
+        ).threshold
+        publications = Publication.objects.filter(
+            mlprediction__prediction__gte=THRESHOLD
+        ).order_by('title')
+    elif (state == 'medium_recall'):
+        THRESHOLD = MLModel.objects.get(
+            topic=search_topic,
+            target_recall=0.75
+        ).threshold
+        publications = Publication.objects.filter(
+            mlprediction__prediction__gte=THRESHOLD
+        ).order_by('title')
+    elif (state == 'high_recall'):
+        THRESHOLD = MLModel.objects.get(
+            topic=search_topic,
+            target_recall=0.95
+        ).threshold
+        publications = Publication.objects.filter(
+            mlprediction__prediction__gte=THRESHOLD
+        ).order_by('title')
+    else:  # If state='default'
+        publications = Publication.objects.distinct().filter(
+            assessment__in=Assessment.objects.filter(
+                topic=search_topic,
+                is_relevant=True
+            )
         )
-    )
 
     t = loader.get_template('engine/ris_template.txt')
     c = {'publications': publications}
     response.write(t.render(c))
     return response
+
+
+@staff_member_required
+def ml(request):
+    ml_models = MLModel.objects.all()
+    context = {'ml_models': ml_models}
+    return render(request, 'engine/ml.html', context)
 
 
 def topics(request, slug, state='default'):
@@ -211,6 +269,7 @@ def topics(request, slug, state='default'):
     (3) Publications that have been assessed by this user [if user is authenticated AND state='assessed']
     (4) Publications that have been assessed as relevant by this user [if user is authenticated AND state='relevant']
     (5) Publications that have been assessed as irrelevant by this user [if user is authenticated AND state='irrelevant']
+    (6) Publications that the machine-learning algorithm has predicted to be relevant, with low recall [if state='low_recall'], medium recall [if state='medium_recall'], or high recall [if state='high_recall']
     """
 
     assessor = request.user
@@ -263,6 +322,35 @@ def topics(request, slug, state='default'):
                 )
             ).order_by('title')
 
+        # Publications that the machine-learning algorithm has predicted to be relevant, with low recall, medium recall, or high recall
+        elif (state == 'low_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.5
+            ).threshold
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD
+            ).order_by('title')
+
+        elif (state == 'medium_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.75
+            ).threshold
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD
+            ).order_by('title')
+
+        elif (state == 'high_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.95
+            ).threshold
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD
+            ).order_by('title')
+
+        # Publications that any user has assessed as relevant (the default view)
         else:
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(

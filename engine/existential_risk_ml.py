@@ -110,8 +110,8 @@ INPUT_DIM = len(vocabulary)
 # Build the neural network.
 net = tflearn.input_data([None, N_FEATURES])
 # Word embedding
-net = tflearn.embedding(net, input_dim=INPUT_DIM, output_dim=32)
-net = tf.reshape(net, [-1, N_FEATURES, 32, 1])
+net = tflearn.embedding(net, input_dim=INPUT_DIM, output_dim=16)
+net = tf.reshape(net, [-1, N_FEATURES, 16, 1])
 # Convolutions
 net = tflearn.layers.conv.conv_2d(net, nb_filter=2, filter_size=[2,3], strides=[1,1,1,1], activation='relu')
 # Uncomment the next line to add a max pool layer, which is commonly used after a convolution layer.
@@ -124,9 +124,9 @@ net = tflearn.regression(net, optimizer='adam', learning_rate=0.001,
 
 # Train the network.
 nn = tflearn.DNN(net, tensorboard_verbose=0)
-connection.connection.ping()
+connection.connection.ping()  # Ping MySQL to maintain the connection.
 nn.fit(X_training, Y_training, validation_set=(X_test, Y_test), show_metric=True, batch_size=32)
-connection.connection.ping()
+connection.connection.ping()  # Ping MySQL to maintain the connection.
 
 pred_test = nn.predict(X_test)
 results_df = pd.DataFrame(pred_test)
@@ -175,12 +175,12 @@ for threshold in thresholds:
     tradeoffs.append([threshold, accuracy, precision, recall])
 
     print("Threshold:", threshold)
-    connection.connection.ping()
+    connection.connection.ping() # Ping MySQL to maintain the connection.
 
 tradeoffs_df = pd.DataFrame(tradeoffs)
 tradeoffs_df.columns = ['threshold', 'accuracy', 'precision', 'recall']
 
-# Set recall values, then set threshold values that result in these recall values.
+# Set the target recall values, then set threshold values that result in these recall values.
 target_recalls = [0.95, 0.9, 0.75, 0.5]
 models_list = []
 models_dict = []

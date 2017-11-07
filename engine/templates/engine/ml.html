@@ -1,0 +1,23 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+  Machine-Learning Models | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+  <table>
+    <tr>
+      <td class="ml">Model</td><td class="ml">Topic</td><td class="ml">Recall</td><td class="ml">Precision</td><td>Accuracy</td>
+    </tr>
+  {% for model in ml_models %}
+    <tr>
+      <td class="ml">{{ forloop.counter }}</td><td class="ml">{{ model.topic }}</td><td class="ml">{{ model.test_recall|floatformat:"4" }}</td><td class="ml">{{ model.precision|floatformat:"4" }}</td><td>{{ model.accuracy|floatformat:"4" }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endblock %}

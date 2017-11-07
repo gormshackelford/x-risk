@@ -214,6 +214,10 @@ td.assessment.yellow {
     background-color: #ffff80;
 }
 
+td.ml {
+    padding-right: 1em;
+}
+
 td.scoreboard {
     padding-right: 1em;
 }
