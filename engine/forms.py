@@ -26,6 +26,14 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ('username', 'first_name', 'last_name', 'institution', 'email', 'password1', 'password2', 'topics')
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        username = self.cleaned_data.get('username')
+        if email and User.objects.filter(email=email).exclude(
+            username=username).exists():
+            raise forms.ValidationError('This email address has already been registered.')
+        return email
+
 
 class UserForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
