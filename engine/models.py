@@ -119,6 +119,7 @@ class Profile(models.Model):
     def __str__(self):
         return 'Profile for username "{username}"'.format(username=self.user.username)
 
+
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -135,3 +136,24 @@ class AssessmentStatus(models.Model):
 
     def __str__(self):
         return 'Progress report for username "{username}" and topic "{topic}"'.format(username=self.assessor.username, topic=self.topic)
+
+
+class MLModel(models.Model):
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    threshold = models.FloatField()
+    accuracy = models.FloatField()
+    precision = models.FloatField()
+    test_recall = models.FloatField()
+    target_recall = models.FloatField()
+
+    def __str__(self):
+        return 'Topic: "{topic}"; Precision: {precision}; Recall: {test_recall}'.format(topic=self.topic, precision=self.precision, test_recall=self.test_recall)
+
+
+class MLPrediction(models.Model):
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    prediction = models.FloatField()
+
+    def __str__(self):
+        return 'Prediction: {prediction}; Topic: "{topic}"; Publication: "{publication}"'.format(prediction=self.prediction, topic=self.topic, publication=self.publication)

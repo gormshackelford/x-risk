@@ -1,0 +1,243 @@
+# Run this script as a "standalone" script (terminology from the Django
+# documentation) that uses the Djano ORM to get data from the database.
+# This requires django.setup(), which requires the settings for this project.
+# Appending the root directory to the system path also prevents errors when
+# importing the models from the app.
+if __name__ == '__main__':
+    import sys
+    import os
+    import django
+    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),
+        os.path.pardir))
+    sys.path.append(parent_dir)
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xrisk.settings")
+    django.setup()
+
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+import tflearn
+from django.db import transaction
+from tflearn.layers.conv import conv_2d, max_pool_2d
+from engine.models import Assessment, Publication, MLModel, MLPrediction, Topic
+from tensorflow.contrib import learn
+
+print("This may take a few minutes. Please wait!")
+
+# Set the topic.
+search_topic = Topic.objects.get(topic='existential risk')
+
+# Get the publications.
+relevant_publications = Publication.objects.distinct().filter(
+    assessment__in=Assessment.objects.filter(
+        topic=search_topic,
+        is_relevant=True
+    )
+)
+assessed_publications = Publication.objects.distinct().filter(
+    assessment__in=Assessment.objects.filter(
+        topic=search_topic
+    )
+)
+unassessed_publications = Publication.objects.distinct().filter(
+        search_topics=search_topic
+    ).exclude(assessment__in=Assessment.objects.all()
+)
+
+# Create a dataframe for publications that have been assessed (by humans).
+df = pd.DataFrame(list(assessed_publications.values('pk', 'title', 'abstract')))
+df['is_relevant'] = 0
+df['is_not_relevant'] = 1
+# Mark the relavant publications as relevant (1).
+for publication in relevant_publications:
+    df.loc[df['pk'] == publication.pk, 'is_relevant'] = 1
+    df.loc[df['pk'] == publication.pk, 'is_not_relevant'] = 0
+# Delete the publications without titles or abstracts.
+df = df[df['abstract'] != '']
+df = df[df['title'] != '']
+
+# Split the dataframe into a training set and a test set for machine learning.
+training_set = df.sample(frac=0.8)
+test_set = df.loc[~df.index.isin(training_set.index)]
+# Training set
+X_training = training_set['abstract']
+binomial_labels = []
+for y in training_set['is_relevant']:
+    label = [y, 1 - y]
+    binomial_labels.append(label)
+Y_training = binomial_labels
+Y_training = np.array(Y_training)
+binomial_labels = []
+# Test set
+X_test = test_set['abstract']
+for y in test_set['is_relevant']:
+    label = [y, 1 - y]
+    binomial_labels.append(label)
+Y_test = binomial_labels
+Y_test = np.array(Y_test)
+
+DATA = 'abstract'
+#DATA = 'title'
+data = list(training_set[DATA])
+
+# Set the number of features for the word encodings (number of features = number of words from the abstract or title to use for machine learning, which must be the same for all instances, and which will therefore be padded with zeros for instances with fewer words than this number).
+
+# The mean number of words could be used as the number of features.
+#MEAN_DOCUMENT_LENGTH = sum([len(datum.split(" ")) for datum in data]) / len(data)
+#N_FEATURES = int(round(MEAN_DOCUMENT_LENGTH, 0))
+
+# Or the maximum number of words could be used.
+#MAX_DOCUMENT_LENGTH = max([len(datum.split(" ")) for datum in data])
+#N_FEATURES = int(round(MEAN_DOCUMENT_LENGTH, 0))
+
+# Or another number could be used.
+N_FEATURES = 200
+
+# Create a vocabulary processor and replace each word with its index number in the vocabulary.
+vocab_processor = learn.preprocessing.VocabularyProcessor(N_FEATURES)
+X_training = np.array(list(vocab_processor.fit_transform(list(training_set[DATA]))))
+X_test = np.array(list(vocab_processor.fit_transform(list(test_set[DATA]))))
+
+# Cast the test and training data as the types expected by tensorflow.
+X_training = X_training.astype(np.int32)
+Y_training = Y_training.astype('float')
+X_test = X_test.astype(np.int32)
+Y_test = Y_test.astype('float')
+
+# Get a dictionary of index numbers for the words in the vocabulary.
+vocab_dict = vocab_processor.vocabulary_._mapping
+sorted_vocab = sorted(vocab_dict.items(), key = lambda X_training : X_training[1])
+vocabulary = list(list(zip(*sorted_vocab))[0])
+# Set the dimensions of the vocabulary for use in word embedding.
+INPUT_DIM = len(vocabulary)
+
+# Build the neural network.
+net = tflearn.input_data([None, N_FEATURES])
+# Word embedding
+net = tflearn.embedding(net, input_dim=INPUT_DIM, output_dim=32)
+net = tf.reshape(net, [-1, N_FEATURES, 32, 1])
+# Convolutions
+net = tflearn.layers.conv.conv_2d(net, nb_filter=2, filter_size=[2,3], strides=[1,1,1,1], activation='relu')
+#net = tflearn.layers.conv.max_pool_2d(net, kernel_size=2)
+# Dropout (to reduce overfitting)
+net = tflearn.layers.core.dropout(net, 0.5)
+net = tflearn.fully_connected(net, 2, activation='softmax')
+net = tflearn.regression(net, optimizer='adam', learning_rate=0.001,
+                         loss='categorical_crossentropy')
+
+# Train the network.
+nn = tflearn.DNN(net, tensorboard_verbose=0)
+nn.fit(X_training, Y_training, validation_set=(X_test, Y_test), show_metric=True, batch_size=32)
+
+pred_test = nn.predict(X_test)
+results_df = pd.DataFrame(pred_test)
+results_df.columns = ['p_relevant', 'p_not_relevant']
+labels_df = pd.DataFrame(Y_test)
+
+# Set a threshold value for converting from model predictions (between 0 and 1)
+# to relevance categories (relevant or irrelevant). The threshold value
+# controls the tradeoff between recall (higher recall with lower threshold) and
+# precision (higher precision with higher threshold).
+
+# Find the threshold value by exploring a range of possible values.
+thresholds = np.arange(0.0, 0.5, 0.0001)
+tradeoffs = []
+
+# For each possible value, get the recall, precision, and accuracy scores.
+for threshold in thresholds:
+    results_df['prediction'] = 0
+    results_df['label'] = labels_df[0]
+    results_df.loc[results_df['p_relevant'] > threshold, 'prediction'] = 1
+
+    results_df['incorrect'] = abs(results_df['prediction'] - results_df['label'])
+    incorrect = sum(results_df['incorrect'])
+    accuracy = 1 - (incorrect / len(results_df))
+
+    results_df['true_positive'] = 0
+    results_df.loc[(results_df['prediction'] == 1) & (results_df['label'] == 1), 'true_positive'] = 1
+
+    results_df['false_positive'] = 0
+    results_df.loc[(results_df['prediction'] == 1) & (results_df['label'] == 0), 'false_positive'] = 1
+
+    results_df['true_negative'] = 0
+    results_df.loc[(results_df['prediction'] == 0) & (results_df['label'] == 0), 'true_negative'] = 1
+
+    results_df['false_negative'] = 0
+    results_df.loc[(results_df['prediction'] == 0) & (results_df['label'] == 1), 'false_negative'] = 1
+
+    true_positives = sum(results_df['true_positive'])
+    false_positives = sum(results_df['false_positive'])
+    true_negatives = sum(results_df['true_negative'])
+    false_negatives = sum(results_df['false_negative'])
+
+    recall = true_positives / (true_positives + false_negatives)
+    precision = true_positives / (true_positives + false_positives)
+
+    tradeoffs.append([threshold, accuracy, precision, recall])
+
+    print("Threshold:", threshold)
+
+tradeoffs_df = pd.DataFrame(tradeoffs)
+tradeoffs_df.columns = ['threshold', 'accuracy', 'precision', 'recall']
+
+# Set recall values, then set threshold values that result in these recall values.
+target_recalls = [0.95, 0.9, 0.75, 0.5]
+models_list = []
+models_dict = []
+for target_recall in target_recalls:
+    results_df = tradeoffs_df[tradeoffs_df['recall'] >= target_recall]
+    threshold = max(results_df['threshold'][results_df['recall'] >= target_recall])
+    accuracy = float(results_df['accuracy'][results_df['threshold'] == threshold])
+    precision = float(results_df['precision'][results_df['threshold'] == threshold])
+    test_recall = float(results_df['recall'][results_df['threshold'] == threshold])
+    models_list.append([threshold, accuracy, precision, test_recall, target_recall])
+    models_dict.append({'threshold': threshold, 'accuracy': accuracy, 'precision': precision, 'test_recall': test_recall, 'target_recall': target_recall})
+models_df = pd.DataFrame(models_list)
+models_df.columns = ['threshold', 'accuracy', 'precision', 'test_recall', 'target_recall']
+print(models_df)
+
+# Save the machine-learning models to the database (MLModel).
+ML_models = []
+for model in models_dict:
+    ML_models.append(MLModel(
+        topic=search_topic,
+        threshold=model.get('threshold'),
+        accuracy=model.get('accuracy'),
+        precision=model.get('precision'),
+        target_recall=model.get('target_recall'),
+        test_recall=model.get('test_recall')
+    ))
+with transaction.atomic():
+    MLModel.objects.filter(topic=search_topic).delete()
+    MLModel.objects.bulk_create(ML_models)
+
+# Predict the relevance of publications that have not yet been assessed by humans.
+df = pd.DataFrame(list(unassessed_publications.values('pk', 'title', 'abstract')))
+df = df[df['abstract'] != '']
+df = df[df['title'] != '']
+df = df.reset_index()
+X = np.array(list(vocab_processor.fit_transform(list(df['abstract']))))
+X = X.astype(np.int32)
+predictions = nn.predict(X)
+predictions_df = pd.DataFrame(predictions)
+predictions_df.columns = ['p_relevant', 'p_not_relevant']
+predictions_df['pk'] = df['pk']
+print(predictions_df.head())
+
+# Save the predictions to the database (MLPrediction).
+ML_predictions = []
+for row in predictions_df.itertuples():
+    ML_predictions.append(MLPrediction(
+        publication=Publication.objects.get(pk=row.pk),
+        topic=search_topic,
+        prediction=row.p_relevant
+    ))
+#TODO: Add human-assessed publications?
+#relevant_publications = Publication.objects.distinct().filter(
+#    assessment__in=Assessment.objects.filter(
+#        topic=search_topic,
+#        is_relevant=True
+#    ))
+with transaction.atomic():
+    MLPrediction.objects.filter(topic=search_topic).delete()
+    MLPrediction.objects.bulk_create(ML_predictions)
