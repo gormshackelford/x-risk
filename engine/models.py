@@ -92,7 +92,6 @@ class Publication(models.Model):
     @property
     def google_string(self):
         string = quote_plus(self.title)
-        string = '%22' + string + '%22'
         return string
 
 
