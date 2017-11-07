@@ -39,10 +39,6 @@ assessed_publications = Publication.objects.distinct().filter(
         topic=search_topic
     )
 )
-unassessed_publications = Publication.objects.distinct().filter(
-        search_topics=search_topic
-    ).exclude(assessment__in=Assessment.objects.all()
-)
 
 # Create a dataframe for publications that have been assessed (by humans).
 df = pd.DataFrame(list(assessed_publications.values('pk', 'title', 'abstract')))
@@ -212,6 +208,10 @@ with transaction.atomic():
     MLModel.objects.bulk_create(ML_models)
 
 # Predict the relevance of publications that have not yet been assessed by humans.
+unassessed_publications = Publication.objects.distinct().filter(
+        search_topics=search_topic
+    ).exclude(assessment__in=Assessment.objects.all()
+)
 df = pd.DataFrame(list(unassessed_publications.values('pk', 'title', 'abstract')))
 df = df[df['abstract'] != '']
 df = df[df['title'] != '']
