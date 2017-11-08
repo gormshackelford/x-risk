@@ -10,12 +10,12 @@
 
 {% block content %}
   <h1>Machine Learning</h1>
-  <p>Machine learning is about pattern matching. Using a "training set" of publications that have been labelled as "relevant" or "irrelevant" to a given topic, a machine-learning algorithm can be trained to identify relevant publications, based on the pattern of words in the titles and/or abstracts of these publications. This algorithm can then help us to save time by automatically identifying relevant publications.</p>
-  <p>Machine learning is not perfect. Like humans, machine-learning algorithms make mistakes. We can quantify the mistakes that an algorithm is likely to make by testing its performance on a "test set" of publications that have already been assessed by humans (with different publications than those in the "training set"). When we do this test, we can see that there is a trade-off between "precision" and "recall". Precision is the proportion of publications that the algorithm predicts to be relevant that are truly relevant. Recall is the proportion of publications that are truly relevant that the algorithm predicts to be relevant.</p>
+  <p>Machine learning is about pattern matching. Using a "training set" of publications that have been labelled as "relevant" or "irrelevant" to a given topic, a machine-learning algorithm can be trained to identify relevant publications, based on the pattern of words in the titles and/or abstracts of these publications.</p>
+  <p>Machine learning is not perfect. Like humans, a machine-learning algorithm can make mistakes. We can quantify these mistakes by testing the performance of the trained algorithm on a "test set" of publications that have also been labelled as "relevant" or "irrelevant" (different publications than those in the "training set"). When we do this test, we can see that there is a trade-off between "precision" and "recall". Precision is the proportion of publications that the algorithm predicts to be relevant that are truly relevant. Recall is the proportion of publications that are truly relevant that the algorithm predicts to be relevant.</p>
   <h2>Table 1: Trade-off between precision and recall</h2>
   <table>
     <tr>
-      <td class="ml">Topic</td><td class="ml">Model</td><td class="ml">Recall</td><td class="ml">Precision</td><td class="ml">N Relevant</td><td>N Relevant x Precision</td>
+      <td class="ml">Topic</td><td class="ml">Model</td><td class="ml">Recall</td><td class="ml">Precision</td><td class="ml">Positives</td><td>True Positives</td>
     </tr>
   {% for model, n_predicted, n_relevant in ml_models %}
     <tr>
@@ -33,8 +33,8 @@
     </tr>
   {% endfor %}
   </table>
-  <p>By selecting a model with high recall, we will have more "false positives" (irrelevant publications that the algorithm predicts to be relevant), but we will also have fewer "false negatives" (relevant publications that the algorithm predicts to be irrelevant). By selecting a model with low recall, we will have fewer irrelevant publications to sort through (and we will save time), but we will miss some relevant publications. You should select a model based on the amount of time you have and your preference for either high precision or high recall.</p>
-  <p>In Table 1, the number of publications that are likely to be relevant for each machine-learning model (based on its performance on the test set) is shown in the column "N Relevant x Precision". Thus, the first model in the table predicts that {{ n_predicted_example }} publications are relevant, and this is the number of publications that you will have to sort through, when using this model to find publications that are truly relevant. Of these publications, {{ n_relevant_example|floatformat:"0" }} are likely to be truly relevant (based on the precision of the model, when tested on the test set).</p>
+  <p>By selecting a model with high recall, you will get more "false positives" (irrelevant publications that the algorithm predicts to be relevant), but you will also get fewer "false negatives" (relevant publications that the algorithm predicts to be irrelevant). By selecting a model with low recall, you will get fewer irrelevant publications to sort through (and thus you will save time), but you will also lose some relevant publications. You should select a model based on the amount of time you have and your preference for either high precision or high recall.</p>
+  <p>In Table 1, the number of publications that are likely to be truly relevant are in the column called "True Positives". Thus, in the first row in the table, the model predicts that {{ n_predicted_example }} publications are relevant ("Positives"), and this is the number of publications that you will have to sort through to find publications that are truly relevant. Of these publications, {{ n_relevant_example|floatformat:"0" }} are likely to be truly relevant, based on the precision of the model, when tested on the test set (true positives = positives x precision). However, this is only an estimate, since the model is not likely to perform identically on the test set and the new set of unassessed publications.</p>
 {% endblock %}
 
 {% block sidebar %}
