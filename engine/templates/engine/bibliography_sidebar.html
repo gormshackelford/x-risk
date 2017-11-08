@@ -5,22 +5,23 @@
   {% else %}
       <a href="{% url 'topics' slug='existential-risk' %}">Existential risk</a>
   {% endif %}
-  (download: <a href="{% url 'download_csv' slug='existential-risk' %}">CSV</a> | <a href="{% url 'download_ris' slug='existential-risk' %}">RIS</a>)
+  (<a href="{% url 'download_csv' slug='existential-risk' %}">CSV</a> | <a href="{% url 'download_ris' slug='existential-risk' %}">RIS</a>)
 </p>
 <p>
   Other bibliographies are to be announced for specific x-risks (e.g., artificial intelligence or asteroid impact).
 </p>
 
-<h1>Bibliography (ML)<a href="#*"><sup>*</sup></a></h1>
-<p>
-  Existential risk: <a href="{% url 'topics' slug='existential-risk' state='low_recall' %}">Low recall</a> (<a href="{% url 'download_csv' slug='existential-risk' state='low_recall' %}">CSV</a> | <a href="{% url 'download_ris' slug='existential-risk' state='low_recall' %}">RIS</a>)
+<h1>Bibliography (ML)<a href="#***"><sup>***</sup></a></h1>
+<p>Existential risk:</p>
+<p class="indented">
+  <a href="{% url 'topics' slug='existential-risk' state='low_recall' %}">Low recall</a> (<a href="{% url 'download_csv' slug='existential-risk' state='low_recall' %}">CSV</a> | <a href="{% url 'download_ris' slug='existential-risk' state='low_recall' %}">RIS</a>)
+</p>
+<p class="indented">
+  <a href="{% url 'topics' slug='existential-risk' state='medium_recall' %}">Medium recall</a> (<a href="{% url 'download_csv' slug='existential-risk' state='medium_recall' %}">CSV</a> | <a href="{% url 'download_ris' slug='existential-risk' state='medium_recall' %}">RIS</a>)
+</p>
+<p class="indented">
+  <a href="{% url 'topics' slug='existential-risk' state='high_recall' %}">High recall</a> (<a href="{% url 'download_csv' slug='existential-risk' state='high_recall' %}">CSV</a> | <a href="{% url 'download_ris' slug='existential-risk' state='high_recall' %}">RIS</a>)
 </p>
 <p>
-  Existential risk: <a href="{% url 'topics' slug='existential-risk' state='medium_recall' %}">Medium recall</a> (<a href="{% url 'download_csv' slug='existential-risk' state='medium_recall' %}">CSV</a> | <a href="{% url 'download_ris' slug='existential-risk' state='medium_recall' %}">RIS</a>)
-</p>
-<p>
-  Existential risk: <a href="{% url 'topics' slug='existential-risk' state='high_recall' %}">High recall</a> (<a href="{% url 'download_csv' slug='existential-risk' state='high_recall' %}">CSV</a> | <a href="{% url 'download_ris' slug='existential-risk' state='high_recall' %}">RIS</a>)
-</p>
-<p>
-  <sup id="*">*</sup>Publications that our machine-learning (ML) algorithm has predicted to be relevant (not yet assessed by humans, and therefore not in the main bibliography). To see a smaller set of publications that are more likely to be relevant, select "low recall". To see a larger set of publications that are less likely to be relevant, select "high recall".
+  <sup id="***">***</sup><a href="{% url 'ml' %}">Machine Learning (ML):</a> Publications that are predicted to be relevant (not yet assessed by humans, and therefore not yet in the non-ML bibliography)
 </p>

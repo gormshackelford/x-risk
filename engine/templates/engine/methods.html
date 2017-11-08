@@ -103,7 +103,7 @@
     </div>
 
     <h2>Machine Learning</h2>
-    <p>Details of the machine-learning algorithm will be published as soon as it is up and running! At present, we are still building the training set. Please <a href="{% url 'signup' %}">sign up</a> if you would like to help.</p>
+    <p>We are using an artificial neural network (implemented in TensorFlow<a href="#5"><sup>5</sup></a>) to predict the relevance of publications that have not yet been assessed, based on the abstracts of publications that have been assessed (labelled as "relevant" or "irrelevant"). First, we exclude publications that do not have abstracts. Second, we randomly split these publications into a training set (80% of publications) and a test set (20% of publications). Third, we use the first 200 words of each abstract in the training set as the input into the neural network (200 is approximately the average number of words in these abstracts), and we use a "convolution" layer in the network to encode each of these word as a vector of numbers ("word embedding"), based on its relationship to the other words in the abstract. Fourth, we pass these word embeddings to a fully connected layer in the network. When this network is trained, we use it to predict the probability that each publication in the test set is relevant. Please see <a href="{% url 'ml' %}">Machine Learning</a> for information on its performance. We then use the trained network to predict the relevance of publications that have not yet been assessed by humans.</p>
 
 
 <h1>Other topics</h1>
@@ -114,6 +114,7 @@
 <p><sup id="2">2</sup>Pamlin, D., Armstrong, S., Baum, S. (2015). <span class="italic">Global Challenges: 12 Risks that Threaten Human Civilization.</span> Global Challenges Foundation.</p>
 <p><sup id="3">3</sup>We plan to search additional databases as soon as possible.</p>
 <p><sup id="4">4</sup></a>By working together, we hope that the literature on specific risks will not prove to be "too voluminous to catalogue", but we acknowledge that a catalogue would be of limited usefulness if it is too voluminous to be read (by humans).
+<p><sup id="5">5</sup>For more information, please see G&eacute;ron, A (2017). <span class="italic">Hands-On Machine Learning with Scikit-Learn and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems</span>. O'Reilly Media, Inc., Sebastopol, California.</p>
 
 {% endblock %}
 

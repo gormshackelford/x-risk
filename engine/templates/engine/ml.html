@@ -1,23 +1,42 @@
 {% extends 'engine/base.html' %}
 
 {% block title %}
-  Machine-Learning Models | www.x-risk.net
+  Machine Learning and Existential Risk | www.x-risk.net
 {% endblock %}
 
 {% block css %}{% load staticfiles %}
   <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
 {% endblock %}
 
-
 {% block content %}
+  <h1>Machine Learning</h1>
+  <p>Machine learning is about pattern matching. From a set of publications that have been labelled as "relevant" or "irrelevant" to a topic (a "training set" of publications), a machine-learning algorithm can be trained to learn the pattern of words in the relevant publications. It can then find new publications that match this pattern (publications that have not yet been assessed by humans). Thus, for our purposes, machine learning is about saving time while systematically trying to find relevant publications.</p>
+  <p>Machine learning is not perfect. Like humans, machine-learning algorithms make mistakes. We can quantify the mistakes that an algorithm is likely to make by testing its performance on a set of publications that have already been assessed by humans (a "test set" of publications). When we do this test, we can see that there is a trade-off between "precision" and "recall". Precision is the proportion of publications that the algorithm predicts to be relevant that are truly relevant. Recall is the proportion of publications that are truly relevant that the algorithm predicts to be relevant.</p>
+  <h2>Table 1: Trade-off between precision and recall</h2>
   <table>
     <tr>
-      <td class="ml">Model</td><td class="ml">Topic</td><td class="ml">Recall</td><td class="ml">Precision</td><td>Accuracy</td>
+      <td class="ml">Topic</td><td class="ml">Model</td><td class="ml">Recall</td><td class="ml">Precision</td><td class="ml">N Relevant</td><td>N Relevant x Precision</td>
     </tr>
-  {% for model in ml_models %}
+  {% for model, n_predicted, n_relevant in ml_models %}
     <tr>
-      <td class="ml">{{ forloop.counter }}</td><td class="ml">{{ model.topic }}</td><td class="ml">{{ model.test_recall|floatformat:"4" }}</td><td class="ml">{{ model.precision|floatformat:"4" }}</td><td>{{ model.accuracy|floatformat:"4" }}</td>
+      <td class="ml">{{ model.topic|capfirst }}</td>
+      <td class="ml">
+        {% if model.target_recall == 0.95 %}"High recall"
+        {% elif model.target_recall == 0.75 %}"Medium recall"
+        {% elif model.target_recall == 0.50 %}"Low recall"
+        {% endif %}
+      </td>
+      <td class="ml">{{ model.test_recall|floatformat:"4" }}</td>
+      <td class="ml">{{ model.precision|floatformat:"4" }}</td>
+      <td class="ml">{{ n_predicted }}</td>
+      <td class="ml">{{ n_relevant|floatformat:"0" }}</td>
     </tr>
   {% endfor %}
   </table>
+  <p>By selecting a model with high recall, we will minimize the number of "false negatives" (relevant publications that the algorithm predicts to be irrelevant), but we will also have more "false positives" (irrelevant publications that the algorithm predicts to be relevant). By selecting a model with low recall, we will have fewer irrelevant publications to sort through (and we will save time), but we might miss some relevant publications.</p>
+  <p>In Table 1, the number of publications that are likely to be relevant for each machine-learning model (based on its performance on the test set) is shown in the column "N Relevant x Precision". Thus, the first model in the table predicts that {{ n_predicted_example }} publications are relevant, and this is the number of publications that a human would have to sort through, when using this model to publications that are truly relevant. Of these publications, {{ n_relevant_example|floatformat:"0" }} are likely to be relevant (based on the precision of the model, when tested on the test set).</p>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
 {% endblock %}

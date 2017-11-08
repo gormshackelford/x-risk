@@ -254,10 +254,23 @@ def download_ris(request, slug, state='default'):
     return response
 
 
-@staff_member_required
 def ml(request):
-    ml_models = MLModel.objects.all()
-    context = {'ml_models': ml_models}
+    target_recalls = (0.95, 0.75, 0.50)
+    ml_models = MLModel.objects.filter(target_recall__in=target_recalls)
+    n_predicted = []
+    n_relevant = []
+    for ml_model in ml_models:
+        threshold = ml_model.threshold
+        n = Publication.objects.filter(
+            mlprediction__prediction__gte=threshold
+        ).count()
+        n_predicted.append(n)
+        n_relevant.append(ml_model.precision * n)
+    context = {
+        'ml_models': zip(ml_models, n_predicted, n_relevant),
+        'n_predicted_example': n_predicted[0],
+        'n_relevant_example': n_relevant[0],
+    }
     return render(request, 'engine/ml.html', context)
 
 
