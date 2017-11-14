@@ -18,7 +18,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from ast import literal_eval
 from random import shuffle
 from .tokens import account_activation_token
-from .models import Topic, Publication, Assessment, AssessmentStatus, MLModel
+from .models import Topic, Publication, Assessment, AssessmentStatus, MLModel, Log
 from .forms import AssessmentForm, SignUpForm, ProfileForm, UserForm
 import config
 import csv
@@ -175,7 +175,8 @@ def download_csv(request, slug, state='default'):
             target_recall=0.5
         ).threshold
         publications = Publication.objects.filter(
-            mlprediction__prediction__gte=THRESHOLD
+            mlprediction__prediction__gte=THRESHOLD,
+            mlprediction__topic=search_topic
         ).order_by('title')
     elif (state == 'medium_recall'):
         THRESHOLD = MLModel.objects.get(
@@ -183,7 +184,8 @@ def download_csv(request, slug, state='default'):
             target_recall=0.75
         ).threshold
         publications = Publication.objects.filter(
-            mlprediction__prediction__gte=THRESHOLD
+            mlprediction__prediction__gte=THRESHOLD,
+            mlprediction__topic=search_topic
         ).order_by('title')
     elif (state == 'high_recall'):
         THRESHOLD = MLModel.objects.get(
@@ -191,7 +193,8 @@ def download_csv(request, slug, state='default'):
             target_recall=0.95
         ).threshold
         publications = Publication.objects.filter(
-            mlprediction__prediction__gte=THRESHOLD
+            mlprediction__prediction__gte=THRESHOLD,
+            mlprediction__topic=search_topic
         ).order_by('title')
     else:  # If state='default'
         publications = Publication.objects.distinct().filter(
@@ -222,7 +225,8 @@ def download_ris(request, slug, state='default'):
             target_recall=0.5
         ).threshold
         publications = Publication.objects.filter(
-            mlprediction__prediction__gte=THRESHOLD
+            mlprediction__prediction__gte=THRESHOLD,
+            mlprediction__topic=search_topic
         ).order_by('title')
     elif (state == 'medium_recall'):
         THRESHOLD = MLModel.objects.get(
@@ -230,7 +234,8 @@ def download_ris(request, slug, state='default'):
             target_recall=0.75
         ).threshold
         publications = Publication.objects.filter(
-            mlprediction__prediction__gte=THRESHOLD
+            mlprediction__prediction__gte=THRESHOLD,
+            mlprediction__topic=search_topic
         ).order_by('title')
     elif (state == 'high_recall'):
         THRESHOLD = MLModel.objects.get(
@@ -238,7 +243,8 @@ def download_ris(request, slug, state='default'):
             target_recall=0.95
         ).threshold
         publications = Publication.objects.filter(
-            mlprediction__prediction__gte=THRESHOLD
+            mlprediction__prediction__gte=THRESHOLD,
+            mlprediction__topic=search_topic
         ).order_by('title')
     else:  # If state='default'
         publications = Publication.objects.distinct().filter(
@@ -261,8 +267,10 @@ def ml(request):
     n_relevant = []
     for ml_model in ml_models:
         threshold = ml_model.threshold
+        topic = ml_model.topic
         n = Publication.objects.filter(
-            mlprediction__prediction__gte=threshold
+            mlprediction__prediction__gte=threshold,
+            mlprediction__topic=topic
         ).count()
         n_predicted.append(n)
         n_relevant.append(ml_model.precision * n)
@@ -342,7 +350,8 @@ def topics(request, slug, state='default'):
                 target_recall=0.5
             ).threshold
             publications = Publication.objects.filter(
-                mlprediction__prediction__gte=THRESHOLD
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic
             ).order_by('title')
 
         elif (state == 'medium_recall'):
@@ -351,7 +360,8 @@ def topics(request, slug, state='default'):
                 target_recall=0.75
             ).threshold
             publications = Publication.objects.filter(
-                mlprediction__prediction__gte=THRESHOLD
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic
             ).order_by('title')
 
         elif (state == 'high_recall'):
@@ -360,8 +370,29 @@ def topics(request, slug, state='default'):
                 target_recall=0.95
             ).threshold
             publications = Publication.objects.filter(
-                mlprediction__prediction__gte=THRESHOLD
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic
             ).order_by('title')
+
+        elif (state == 'new_low_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.5
+            ).threshold
+            # Get the pk values of new publications (new publications have a pk value greater than the maximum pk value of the old publications that were sent in the last alert).
+            try:
+                max_publication_pks = Log.objects.all().values_list('max_publication_pk', flat=True)
+                max_publication_pks = set(max_publication_pks)
+                new_max = max(max_publication_pks)
+                old_max_publication_pks = max_publication_pks - set([new_max])
+                old_max = max(old_max_publication_pks)
+            except:
+                old_max = 0
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic,
+                pk__gt=old_max
+            ).order_by('-mlprediction__prediction')
 
         # Publications that any user has assessed as relevant (the default view)
         else:
@@ -379,7 +410,8 @@ def topics(request, slug, state='default'):
                 target_recall=0.5
             ).threshold
             publications = Publication.objects.filter(
-                mlprediction__prediction__gte=THRESHOLD
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic
             ).order_by('title')
 
         elif (state == 'medium_recall'):
@@ -388,7 +420,8 @@ def topics(request, slug, state='default'):
                 target_recall=0.75
             ).threshold
             publications = Publication.objects.filter(
-                mlprediction__prediction__gte=THRESHOLD
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic
             ).order_by('title')
 
         elif (state == 'high_recall'):
@@ -397,8 +430,30 @@ def topics(request, slug, state='default'):
                 target_recall=0.95
             ).threshold
             publications = Publication.objects.filter(
-                mlprediction__prediction__gte=THRESHOLD
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic
             ).order_by('title')
+
+        elif (state == 'new_low_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.5
+            ).threshold
+            # Get the pk values of new publications to be sent in this alert (new publications have a pk value greater than the maximum pk value of the old publications that were sent in the last alert).
+            try:
+                max_publication_pks = Log.objects.all().values_list('max_publication_pk', flat=True)
+                max_publication_pks = set(max_publication_pks)
+                new_max = max(max_publication_pks)
+                old_max_publication_pks = max_publication_pks - set([new_max])
+                old_max = max(old_max_publication_pks)
+            except:
+                old_max = 0
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic,
+                pk__gt=old_max
+            ).order_by('-mlprediction__prediction')
+
         else:
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(

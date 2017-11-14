@@ -16,6 +16,7 @@ if __name__ == '__main__':
 import pandas as pd
 import re
 from engine.models import Topic, Publication
+from log import log
 
 # Set the topic.
 topic = Topic.objects.get(topic="existential risk")
@@ -105,3 +106,7 @@ for result in df.itertuples():
     record.save()
     # ManyToManyFields need to be added after the record is saved.
     record.search_topics.add(topic)
+
+event = 'scopus_csv_to_database.py'
+note = 'New publications from a search for {topic} (saved as a CSV file) were saved to the Publication model.'.format(topic=topic)
+log(event=event, note=note)

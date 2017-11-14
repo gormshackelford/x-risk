@@ -156,3 +156,23 @@ class MLPrediction(models.Model):
 
     def __str__(self):
         return 'Prediction: {prediction}; Topic: "{topic}"; Publication: "{publication}"'.format(prediction=self.prediction, topic=self.topic, publication=self.publication)
+
+
+class Log(models.Model):
+    event = models.CharField(max_length=254)
+    note = models.TextField(blank=True)
+    date_time = models.DateTimeField(default=timezone.now)
+    n_users = models.IntegerField()
+    n_publications = models.IntegerField()
+    n_assessments = models.IntegerField()
+    n_assessed_publications = models.IntegerField()
+    max_publication_pk = models.IntegerField()
+
+    class Meta:
+        get_latest_by = 'date_time'
+
+    def __str__(self):
+        return 'Event: {event}; DateTime: {date_time}'.format(
+                event=self.event,
+                date_time=self.date_time
+            )

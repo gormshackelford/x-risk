@@ -1,0 +1,11 @@
+{% autoescape off %}
+
+We found some new publications that might be of interest to you. These publications were recently predicted to be relevant to existential risk or global catastrophic risk by our machine-learning model. However, the relevance of these publications has not yet been assessed by humans.
+
+Please see <a href="http://www.x-risk.net{% url 'topics' slug=topic.slug state='new_low_recall' %}">www.x-risk.net</a> for more information or to assess these publications yourself (you will need to sign in before you can make assessments). If you are already signed in, you can click through to each publication from this email, using the links below.
+
+{% for publication in publications %}
+  {{ publication.title }} (<a href="http://www.x-risk.net{% url 'assessments' slug=topic.slug pk=publication.pk %}">Assess this publication</a>)
+{% endfor %}
+
+{% endautoescape %}

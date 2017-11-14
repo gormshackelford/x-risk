@@ -20,6 +20,7 @@ ml_notebook_svm.ipynb
 ml_notebook_tensorflow_abstracts.ipynb
 ml_notebook_tensorflow_final.ipynb
 ml_notebook_tensorflow_titles.ipynb
+log.ipynb
 checkpoint
 .ipynb_checkpoints/
 imdb.pkl

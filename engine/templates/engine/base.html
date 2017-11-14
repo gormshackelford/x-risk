@@ -42,14 +42,14 @@
           <a class="navigation_text" href="{% url 'profile' %}">Your Profile</a>
 
           &nbsp;&nbsp;|&nbsp;&nbsp;
-          <a class="navigation_text" href="{% url 'logout' %}">Log out</a>
+          <a class="navigation_text" href="{% url 'logout' %}">Log Out</a>
 
         {% else %}
 
           <a class="navigation_text" href="{% url 'signup' %}">Sign Up</a>
 
           &nbsp;&nbsp;|&nbsp;&nbsp;
-          <a class="navigation_text" href="{% url 'login' %}?next={{ request.path }}">Log in</a>
+          <a class="navigation_text" href="{% url 'login' %}?next={{ request.path }}">Log In</a>
 
         {% endif %}
 

@@ -14,8 +14,9 @@ if __name__ == '__main__':
     django.setup()
 
 import re
-from engine.models import Search, Publication
 from ast import literal_eval
+from engine.models import Search, Publication
+from log import log
 
 
 publications = Publication.objects.values('title','doi','year')
@@ -104,3 +105,7 @@ for result in results:
     # ManyToManyFields need to be added after the record is saved.
     record.search_topics.add(topic)
     record.searches.add(search)
+
+event = 'scopus_api_to_database.py'
+note = 'New publications from the lastest Scopus search (for {topic}) were saved to the Publication model.'.format(topic=topic)
+log(event=event, note=note)
