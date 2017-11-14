@@ -75,8 +75,6 @@ users = User.objects.all()
 for user in users:
     mailing_list.append(user.email)
 
-mailing_list = ['gormeirik@yahoo.com', 'gorm.shackelford@gmail.com']
-
 EMAIL_HOST_USER = config.EMAIL_HOST_USER
 subject = 'New Publications about Existential Risk or Global Catastrophic Risk'
 context = {

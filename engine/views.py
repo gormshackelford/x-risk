@@ -441,7 +441,7 @@ def topics(request, slug, state='default'):
             ).threshold
             # Get the pk values of new publications to be sent in this alert (new publications have a pk value greater than the maximum pk value of the old publications that were sent in the last alert).
             try:
-                max_publication_pks = Log.objects.all().values_list('max_publication_pk', flat=True)
+                max_publication_pks = Log.objects.filter(event='alert.py').values_list('max_publication_pk', flat=True)
                 max_publication_pks = set(max_publication_pks)
                 new_max = max(max_publication_pks)
                 old_max_publication_pks = max_publication_pks - set([new_max])
