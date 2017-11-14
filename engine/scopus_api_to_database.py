@@ -13,11 +13,19 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xrisk.settings")
     django.setup()
 
+import datetime
 import re
 from ast import literal_eval
 from engine.models import Search, Publication
 from log import log
 
+
+now = datetime.datetime.now()
+day = now.day
+
+# This script is run as a daily task (monthly is not possible), but we want it to be run only as a monthly task, on a specified day of the month (day = 15).
+if (day != 14):
+    exit()
 
 publications = Publication.objects.values('title','doi','year')
 

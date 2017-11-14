@@ -13,6 +13,7 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xrisk.settings")
     django.setup()
 
+import datetime
 import config
 import numpy as np
 import pandas as pd
@@ -25,6 +26,13 @@ from django.db import connection, transaction
 from engine.models import Assessment, Publication, MLModel, MLPrediction, Topic
 from log import log
 
+
+now = datetime.datetime.now()
+day = now.day
+
+# This script is run as a daily task (monthly is not possible), but we want it to be run only as a monthly task, on a specified day of the month (day = 15).
+if (day != 14):
+    exit()
 
 print("This may take a while. Please wait!")
 

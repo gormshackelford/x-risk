@@ -13,6 +13,7 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xrisk.settings")
     django.setup()
 
+import datetime
 import config
 from django.http import HttpResponse
 from django.template import Context
@@ -21,6 +22,14 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 from engine.models import Publication, MLModel, Topic, Log
 from log import log
+
+
+now = datetime.datetime.now()
+day = now.day
+
+# This script is run as a daily task (monthly is not possible), but we want it to be run only as a monthly task, on a specified day of the month (day = 15).
+if (day != 14):
+    exit()
 
 # Set the name of this script, for use in saving the log.
 event = 'alert.py'
@@ -78,6 +87,6 @@ message = get_template('engine/alert_email.html').render(context)
 message = EmailMessage(subject, message, to=[EMAIL_HOST_USER], bcc=mailing_list)
 message.send()
 
-note = 'An email alert was sent to the mailing list for {topic}, with publications that were recently predicted to be relevant by the machine-learning model.'.format(topic=topic)
+note = 'An email alert was sent to the mailing list for {topic}, with publications that were recently predicted to be relevant by the machine-learning model. Here is the mailing list: {mailing_list}'.format(topic=topic, mailing_list=mailing_list)
 log(event=event, note=note)
 print(note)

@@ -22,6 +22,15 @@ from engine.models import Topic, Source, SearchString, Search
 from log import log
 
 
+now = datetime.datetime.now()
+year = now.year
+month = now.month
+day = now.day
+
+# This script is run as a daily task (monthly is not possible), but we want it to be run only as a monthly task, on a specified day of the month (day = 15).
+if (day != 14):
+    exit()
+
 # Load configuration
 config_file = os.path.join(parent_dir, "config.json")
 with open(config_file, 'r') as f:
@@ -45,9 +54,6 @@ string_1 = 'TITLE-ABS-KEY' + '%28' + quote_plus(string_1) + '%29'
 string_2 = search_string.search_string_for_references
 string_2 = 'REF' + '%28' + quote_plus(string_2) + '%29'
 
-now = datetime.datetime.now()
-year = now.year
-month = now.month
 # Search for publications from this year. If the final search of the year is not exactly at the end of the year, then some publications could be missed. Therefore, we use a different PUBYEAR string in January (month == 1) of the following year (assuming that searches are done at least once per month).
 if month == 1:
     year = year - 2
