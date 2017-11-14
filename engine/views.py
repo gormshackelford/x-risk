@@ -177,7 +177,7 @@ def download_csv(request, slug, state='default'):
         publications = Publication.objects.filter(
             mlprediction__prediction__gte=THRESHOLD,
             mlprediction__topic=search_topic
-        ).order_by('title')
+        ).order_by('-mlprediction__prediction')
     elif (state == 'medium_recall'):
         THRESHOLD = MLModel.objects.get(
             topic=search_topic,
@@ -186,7 +186,7 @@ def download_csv(request, slug, state='default'):
         publications = Publication.objects.filter(
             mlprediction__prediction__gte=THRESHOLD,
             mlprediction__topic=search_topic
-        ).order_by('title')
+        ).order_by('-mlprediction__prediction')
     elif (state == 'high_recall'):
         THRESHOLD = MLModel.objects.get(
             topic=search_topic,
@@ -195,7 +195,7 @@ def download_csv(request, slug, state='default'):
         publications = Publication.objects.filter(
             mlprediction__prediction__gte=THRESHOLD,
             mlprediction__topic=search_topic
-        ).order_by('title')
+        ).order_by('-mlprediction__prediction')
     else:  # If state='default'
         publications = Publication.objects.distinct().filter(
             assessment__in=Assessment.objects.filter(
@@ -227,7 +227,7 @@ def download_ris(request, slug, state='default'):
         publications = Publication.objects.filter(
             mlprediction__prediction__gte=THRESHOLD,
             mlprediction__topic=search_topic
-        ).order_by('title')
+        ).order_by('-mlprediction__prediction')
     elif (state == 'medium_recall'):
         THRESHOLD = MLModel.objects.get(
             topic=search_topic,
@@ -236,7 +236,7 @@ def download_ris(request, slug, state='default'):
         publications = Publication.objects.filter(
             mlprediction__prediction__gte=THRESHOLD,
             mlprediction__topic=search_topic
-        ).order_by('title')
+        ).order_by('-mlprediction__prediction')
     elif (state == 'high_recall'):
         THRESHOLD = MLModel.objects.get(
             topic=search_topic,
@@ -245,7 +245,7 @@ def download_ris(request, slug, state='default'):
         publications = Publication.objects.filter(
             mlprediction__prediction__gte=THRESHOLD,
             mlprediction__topic=search_topic
-        ).order_by('title')
+        ).order_by('-mlprediction__prediction')
     else:  # If state='default'
         publications = Publication.objects.distinct().filter(
             assessment__in=Assessment.objects.filter(
@@ -352,7 +352,7 @@ def topics(request, slug, state='default'):
             publications = Publication.objects.filter(
                 mlprediction__prediction__gte=THRESHOLD,
                 mlprediction__topic=search_topic
-            ).order_by('title')
+            ).order_by('-mlprediction__prediction')
 
         elif (state == 'medium_recall'):
             THRESHOLD = MLModel.objects.get(
@@ -362,7 +362,7 @@ def topics(request, slug, state='default'):
             publications = Publication.objects.filter(
                 mlprediction__prediction__gte=THRESHOLD,
                 mlprediction__topic=search_topic
-            ).order_by('title')
+            ).order_by('-mlprediction__prediction')
 
         elif (state == 'high_recall'):
             THRESHOLD = MLModel.objects.get(
@@ -372,7 +372,7 @@ def topics(request, slug, state='default'):
             publications = Publication.objects.filter(
                 mlprediction__prediction__gte=THRESHOLD,
                 mlprediction__topic=search_topic
-            ).order_by('title')
+            ).order_by('-mlprediction__prediction')
 
         elif (state == 'new_low_recall'):
             THRESHOLD = MLModel.objects.get(
@@ -412,7 +412,7 @@ def topics(request, slug, state='default'):
             publications = Publication.objects.filter(
                 mlprediction__prediction__gte=THRESHOLD,
                 mlprediction__topic=search_topic
-            ).order_by('title')
+            ).order_by('-mlprediction__prediction')
 
         elif (state == 'medium_recall'):
             THRESHOLD = MLModel.objects.get(
@@ -422,7 +422,7 @@ def topics(request, slug, state='default'):
             publications = Publication.objects.filter(
                 mlprediction__prediction__gte=THRESHOLD,
                 mlprediction__topic=search_topic
-            ).order_by('title')
+            ).order_by('-mlprediction__prediction')
 
         elif (state == 'high_recall'):
             THRESHOLD = MLModel.objects.get(
@@ -432,7 +432,7 @@ def topics(request, slug, state='default'):
             publications = Publication.objects.filter(
                 mlprediction__prediction__gte=THRESHOLD,
                 mlprediction__topic=search_topic
-            ).order_by('title')
+            ).order_by('-mlprediction__prediction')
 
         elif (state == 'new_low_recall'):
             THRESHOLD = MLModel.objects.get(
