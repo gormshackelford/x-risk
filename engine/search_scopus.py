@@ -13,6 +13,7 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xrisk.settings")
     django.setup()
 
+import datetime
 import json
 from urllib.parse import quote_plus
 from elsapy.elsclient import ElsClient
@@ -44,8 +45,16 @@ string_1 = 'TITLE-ABS-KEY' + '%28' + quote_plus(string_1) + '%29'
 string_2 = search_string.search_string_for_references
 string_2 = 'REF' + '%28' + quote_plus(string_2) + '%29'
 
-year = quote_plus('PUBYEAR IS 2017')
-#language = quote_plus('(LIMIT-TO (LANGUAGE, "English"))')
+now = datetime.datetime.now()
+year = now.year
+month = now.month
+# Search for publications from this year. If the final search of the year is not exactly at the end of the year, then some publications could be missed. Therefore, we use a different PUBYEAR string in January (month == 1) of the following year (assuming that searches are done at least once per month).
+if month == 1:
+    year = year - 2
+    year = 'PUBYEAR > ' + str(year)
+else:
+    year = 'PUBYEAR = ' + str(year)
+year = quote_plus(year)
 
 encoded_search_string = string_1 + '+OR+' + string_2 + '+AND+' + year
 
