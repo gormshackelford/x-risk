@@ -396,9 +396,13 @@ def topics(request, slug, state='default'):
 
         # Publications that any user has assessed as relevant (the default view)
         else:
+            assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn']
+            assessors = User.objects.filter(username__in=assessors)
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
-                    topic=search_topic, is_relevant=True
+                    topic=search_topic,
+                    is_relevant=True,
+                    assessor__in=assessors  # Change to all assessors when we have enough to get average assessments for publications.
                 )
             ).order_by('title')
 
@@ -455,9 +459,13 @@ def topics(request, slug, state='default'):
             ).order_by('-mlprediction__prediction')
 
         else:
+            assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn']
+            assessors = User.objects.filter(username__in=assessors)
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
-                    topic=search_topic, is_relevant=True
+                    topic=search_topic,
+                    is_relevant=True,
+                    assessor__in=assessors  # Change to all assessors when we have enough to get average assessments for publications.
                 )
             ).order_by('title')
 

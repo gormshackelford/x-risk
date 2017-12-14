@@ -21,6 +21,7 @@ import tensorflow as tf
 import tflearn
 from tensorflow.contrib import learn
 from tflearn.layers.conv import conv_2d, max_pool_2d
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import connection, transaction
 from engine.models import Assessment, Publication, MLModel, MLPrediction, Topic
@@ -36,10 +37,14 @@ if (day != 14):
 
 print("This may take a while. Please wait!")
 
-# Retrain the ML model until it is good enough, or up to three times (whichever is quicker).
+assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn']
+assessors = User.objects.filter(username__in=assessors)
+print(assessors)
+
+# Retrain the ML model until it is good enough, or up to five times (whichever is quicker).
 i = 1
 good_enough = False
-while (good_enough != True and i <= 3):
+while (good_enough != True and i <= 5):
 
     # Set the topic.
     search_topic = Topic.objects.get(topic='existential risk')
@@ -48,12 +53,14 @@ while (good_enough != True and i <= 3):
     relevant_publications = Publication.objects.distinct().filter(
         assessment__in=Assessment.objects.filter(
             topic=search_topic,
+            assessor__in=assessors,  # Change to all assessors when we have enough to get average assessments for publications.
             is_relevant=True
         )
     )
     assessed_publications = Publication.objects.distinct().filter(
         assessment__in=Assessment.objects.filter(
-            topic=search_topic
+            topic=search_topic,
+            assessor__in=assessors  # Change to all assessors when we have enough to get average assessments for publications.
         )
     )
 

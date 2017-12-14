@@ -15,8 +15,6 @@ if __name__ == '__main__':
 
 import datetime
 import config
-from django.http import HttpResponse
-from django.template import Context
 from django.template.loader import get_template
 from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
@@ -71,9 +69,9 @@ else:
     exit()
 
 mailing_list = []
-users = User.objects.all()
-for user in users:
-    mailing_list.append(user.email)
+#users = User.objects.all()
+#for user in users:
+#    mailing_list.append(user.email)
 
 EMAIL_HOST_USER = config.EMAIL_HOST_USER
 subject = 'New Publications about Existential Risk or Global Catastrophic Risk'
