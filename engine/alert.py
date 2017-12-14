@@ -69,9 +69,9 @@ else:
     exit()
 
 mailing_list = []
-#users = User.objects.all()
-#for user in users:
-#    mailing_list.append(user.email)
+users = User.objects.all()
+for user in users:
+    mailing_list.append(user.email)
 
 EMAIL_HOST_USER = config.EMAIL_HOST_USER
 subject = 'New Publications about Existential Risk or Global Catastrophic Risk'
