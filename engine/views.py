@@ -478,6 +478,26 @@ def topics(request, slug, state='default'):
                 pk__gt=old_max
             ).order_by('-mlprediction__prediction')
 
+        elif (state == 'new_medium_recall'):
+            THRESHOLD = MLModel.objects.get(
+                topic=search_topic,
+                target_recall=0.75
+            ).threshold
+            # Get the pk values of new publications (new publications have a pk value greater than the maximum pk value of the old publications that were sent in the last alert).
+            try:
+                max_publication_pks = Log.objects.filter(event='alert.py').values_list('max_publication_pk', flat=True)
+                max_publication_pks = set(max_publication_pks)
+                new_max = max(max_publication_pks)
+                old_max_publication_pks = max_publication_pks - set([new_max])
+                old_max = max(old_max_publication_pks)
+            except:
+                old_max = 0
+            publications = Publication.objects.filter(
+                mlprediction__prediction__gte=THRESHOLD,
+                mlprediction__topic=search_topic,
+                pk__gt=old_max
+            ).order_by('-mlprediction__prediction')
+
         else:
             assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn']
             assessors = User.objects.filter(username__in=assessors)
