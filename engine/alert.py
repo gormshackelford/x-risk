@@ -38,7 +38,7 @@ topic = Topic.objects.get(topic='existential risk')
 # Get the threshold value for the ML predictions for this topic.
 THRESHOLD = MLModel.objects.get(
     topic=topic,
-    target_recall=0.5  # For the low recall model.
+    target_recall=0.75  # For the medium recall model.
 ).threshold
 
 # Get the pk values of new publications to be sent in this alert (new publications have a pk value greater than the maximum pk value of the old publications that were sent in the last alert).
