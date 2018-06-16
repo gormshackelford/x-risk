@@ -80,7 +80,6 @@ context = {
     'publications': publications,
     'topic': topic
 }
-message = get_template('engine/alert_email.html').render(context)
 
 # Divide the mailing_list into chunks of 50.
 mailing_list = iter(mailing_list)
@@ -88,6 +87,7 @@ mailing_list = list(iter(lambda: tuple(islice(mailing_list, 50)), ()))
 
 # Send email to each chunk.
 for chunk in mailing_list:
+    message = get_template('engine/alert_email.html').render(context)
     message = EmailMessage(subject, message, to=[EMAIL_HOST_USER], bcc=chunk)
     message.send()
 
