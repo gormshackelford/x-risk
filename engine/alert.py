@@ -19,6 +19,7 @@ from django.template.loader import get_template
 from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 from engine.models import Publication, MLModel, Topic, Log
+from itertools import islice
 from log import log
 
 
@@ -26,7 +27,7 @@ now = datetime.datetime.now()
 day = now.day
 
 # This script is run as a daily task (monthly is not possible), but we want it to be run only as a monthly task, on a specified day of the month (day = 14).
-if (day != 14):
+if (day != 16):
     exit()
 
 # Set the name of this script, for use in saving the log.
@@ -80,9 +81,16 @@ context = {
     'topic': topic
 }
 message = get_template('engine/alert_email.html').render(context)
-message = EmailMessage(subject, message, to=[EMAIL_HOST_USER], bcc=mailing_list)
-message.send()
 
-note = 'An email alert was sent to the mailing list for {topic}, with publications that were recently predicted to be relevant by the machine-learning model. Here is the mailing list: {mailing_list}'.format(topic=topic, mailing_list=mailing_list)
-log(event=event, note=note)
-print(note)
+# Divide the mailing_list into chunks of 50.
+mailing_list = iter(mailing_list)
+mailing_list = list(iter(lambda: tuple(islice(mailing_list, 50)), ()))
+
+# Send email to each chunk.
+for chunk in mailing_list:
+    message = EmailMessage(subject, message, to=[EMAIL_HOST_USER], bcc=chunk)
+    message.send()
+
+    note = 'An email alert was sent to a chunk of the mailing list for {topic}, with publications that were recently predicted to be relevant by the machine-learning model. Here is this chunk of the mailing list: {chunk}'.format(topic=topic, chunk=chunk)
+    log(event=event, note=note)
+    print(note)
