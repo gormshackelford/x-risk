@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^download_csv/(?P<slug>[\w\-]+)/(?P<state>[\w\-]+)/$', views.download_csv, name='download_csv'),
     url(r'^download_ris/(?P<slug>[\w\-]+)/(?P<state>[\w\-]+)/$', views.download_ris, name='download_ris'),
     url(r'^ml/$', views.ml, name='ml'),
+    url(r'^search/(?P<slug>[\w\-]+)/$', views.MySearchView.as_view(), name='haystack_search'),
 ]
 
 if settings.DEBUG:

@@ -73,6 +73,8 @@ class Publication(models.Model):
     doi = models.CharField(max_length=254, blank=True)
     search_topics = models.ManyToManyField(Topic)
     searches = models.ManyToManyField(Search, blank=True)  # blank=True for manual searches uploaded by csv.
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
@@ -101,6 +103,8 @@ class Assessment(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     assessor = models.ForeignKey(settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{boolean}: "{publication}" is relevant to "{topic}"'.format(

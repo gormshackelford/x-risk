@@ -1,0 +1,58 @@
+{% extends 'engine/base.html' %}
+
+{% block title %}
+    Search Publications | X-Risk Research Network | www.x-risk.net
+{% endblock %}
+
+{% block css %}{% load staticfiles %}
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+  <h1>Search results</h1>
+
+  {% for result in page_obj.object_list %}
+    <p>
+      <a href="{% url 'assessments' slug='existential-risk' pk=result.object.pk %}">{{ result.object.title }}</a>
+    </p>
+  {% empty %}
+    <p>No results found.</p>
+  {% endfor %}
+
+  <p>
+    {% if page_obj.has_previous %}
+      <a class="button" href="?q={{ query }}&amp;page={{ page_obj.previous_page_number }}">Previous page</a>
+    {% else %}
+      <a class="button" href="?q={{ query }}&amp;page={{ page_obj.paginator.num_pages }}">Previous page</a>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+      <a class="button" href="?q={{ query }}&amp;page={{ page_obj.next_page_number }}">Next page</a>
+    {% else %}
+      <a class="button" href="?q={{ query }}&amp;page=1">Next page</a>
+    {% endif %}
+  </p>
+
+  <p>
+    Page number:
+    {% for i in page_obj.paginator.page_range %}
+      {% if i == page_obj.number %}
+        {% if i == page_obj.paginator.num_pages %}
+          <span class="warning">{{ i }}</span>
+        {% else %}
+          <span class="warning">{{ i }}</span>,
+        {% endif %}
+      {% elif i == page_obj.paginator.num_pages %}
+        <a href="?q={{ query }}&amp;page={{ i }}">{{ i }}</a>
+      {% else %}
+        <a href="?q={{ query }}&amp;page={{ i }}">{{ i }}</a>,
+      {% endif %}
+    {% endfor %}
+  </p>
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'engine/bibliography_sidebar.html' %}
+{% endblock %}

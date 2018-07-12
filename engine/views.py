@@ -416,7 +416,7 @@ def topics(request, slug, state='default'):
 
         # Publications that any user has assessed as relevant (the default view)
         else:
-            assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn']
+            assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn', 'Simon', 'david.denkenberger']
             assessors = User.objects.filter(username__in=assessors)
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
@@ -499,7 +499,7 @@ def topics(request, slug, state='default'):
             ).order_by('-mlprediction__prediction')
 
         else:
-            assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn']
+            assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn', 'Simon', 'david.denkenberger']
             assessors = User.objects.filter(username__in=assessors)
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
@@ -759,3 +759,22 @@ def get_next_assessment(pk, next_pk, assessment_order, completed_assessments):
             except:
                 next_assessment = assessment_order[0]
     return(next_assessment)
+
+
+from haystack.generic_views import SearchView
+from haystack.forms import SearchForm
+from haystack.query import SearchQuerySet
+
+class MySearchView(SearchView):
+    template_name = 'search/search.html'
+
+    def get_queryset(self, *args, **kwargs):
+        #slug = self.kwargs['slug']
+        #topic = Topic.objects.get(slug=slug)
+        queryset = super(MySearchView, self).get_queryset()
+        return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(MySearchView, self).get_context_data(*args, **kwargs)
+        # do something
+        return context

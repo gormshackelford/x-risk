@@ -61,7 +61,11 @@
       Page number:
       {% for i in publications.paginator.page_range %}
         {% if i == publications.number %}
-          <span class="warning">{{ i }}</span>,
+          {% if i == publications.paginator.num_pages %}
+            <span class="warning">{{ i }}</span>
+          {% else %}
+            <span class="warning">{{ i }}</span>,
+          {% endif %}
         {% elif i == publications.paginator.num_pages %}
           <a href="?page={{ i }}">{{ i }}</a>
         {% else %}

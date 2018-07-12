@@ -189,6 +189,11 @@ table.assessment {
     border-spacing: 0.5em;
 }
 
+table.search {
+    width: 100%;
+    border: 0;
+}
+
 td {
     padding-top: 0.25em;
     padding-bottom: 0.25em;
