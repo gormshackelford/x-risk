@@ -7,6 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from urllib.parse import quote_plus
 
+
 class Topic(models.Model):
     topic = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=150, blank=True)
@@ -160,6 +161,20 @@ class MLPrediction(models.Model):
 
     def __str__(self):
         return 'Prediction: {prediction}; Topic: "{topic}"; Publication: "{publication}"'.format(prediction=self.prediction, topic=self.topic, publication=self.publication)
+
+
+class HumanPrediction(models.Model):
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    n_assessments = models.IntegerField()
+    n_relevant = models.IntegerField()
+    relevance = models.FloatField()
+
+    class Meta:
+        ordering = ['-relevance', '-n_assessments']
+
+    def __str__(self):
+        return 'Relevance: {relevance}; Topic: "{topic}"; Publication: "{publication}"'.format(relevance=self.relevance, topic=self.topic, publication=self.publication)
 
 
 class Log(models.Model):

@@ -8,6 +8,7 @@ db.sqlite3
 config.json
 config.py
 logs
+Agreement.ipynb
 Housing.ipynb
 Classification_Tutorial.ipynb
 Classification.ipynb

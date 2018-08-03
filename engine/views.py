@@ -18,8 +18,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from ast import literal_eval
 from random import shuffle
 from .tokens import account_activation_token
-from .models import Topic, Publication, Assessment, AssessmentStatus, MLModel, Log
-from .forms import AssessmentForm, SignUpForm, ProfileForm, UserForm
+from .models import Assessment, AssessmentStatus, HumanPrediction, Log, MLModel, Publication, Topic
+from .forms import AssessmentForm, ProfileForm, SignUpForm, UserForm
 import config
 import csv
 import json
@@ -202,13 +202,18 @@ def download_csv(request, slug, state='default'):
                 topic=search_topic,
                 is_relevant=True
             )
-        )
+        ).order_by('-humanprediction__relevance', '-humanprediction__n_assessments')
 
     writer = csv.writer(response, quoting=csv.QUOTE_ALL)
-    writer.writerow(['Authors', 'Year', 'Title', 'Journal', 'Volume', 'Issue', 'DOI'])
-    for publication in publications:
-        writer.writerow([publication.author, publication.year, publication.title, publication.journal, publication.volume, publication.issue, publication.doi])
-
+    if (state == 'default'):  # Additional data for the default bibliography only
+        human_predictions = HumanPrediction.objects.filter(topic=search_topic).order_by('-relevance', '-n_assessments')
+        writer.writerow(['Authors', 'Year', 'Title', 'Journal', 'Volume', 'Issue', 'DOI', 'Number_of_Assessments', 'Number_Relevant', 'Relevance'])
+        for publication, human_prediction in zip(publications, human_predictions):
+            writer.writerow([publication.author, publication.year, publication.title, publication.journal, publication.volume, publication.issue, publication.doi, human_prediction.n_assessments, human_prediction.n_relevant, human_prediction.relevance])
+    else:
+        writer.writerow(['Authors', 'Year', 'Title', 'Journal', 'Volume', 'Issue', 'DOI'])
+        for publication in publications:
+            writer.writerow([publication.author, publication.year, publication.title, publication.journal, publication.volume, publication.issue, publication.doi])
     return response
 
 
@@ -252,7 +257,7 @@ def download_ris(request, slug, state='default'):
                 topic=search_topic,
                 is_relevant=True
             )
-        )
+        ).order_by('-humanprediction__relevance', '-humanprediction__n_assessments')
 
     t = loader.get_template('engine/ris_template.txt')
     c = {'publications': publications}
@@ -416,15 +421,12 @@ def topics(request, slug, state='default'):
 
         # Publications that any user has assessed as relevant (the default view)
         else:
-            assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn', 'Simon', 'david.denkenberger']
-            assessors = User.objects.filter(username__in=assessors)
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
                     topic=search_topic,
-                    is_relevant=True,
-                    assessor__in=assessors  # Change to all assessors when we have enough to get average assessments for publications.
+                    is_relevant=True
                 )
-            ).order_by('title')
+            ).order_by('-humanprediction__relevance', '-humanprediction__n_assessments')
 
     else:  # If the user is not authenticated
         # Publications that the machine-learning algorithm has predicted to be relevant, with low recall, medium recall, or high recall
@@ -499,15 +501,12 @@ def topics(request, slug, state='default'):
             ).order_by('-mlprediction__prediction')
 
         else:
-            assessors = ['gorm', 'Sean_o_h', 'carhodes', 'lalitha', 'Haydn', 'Simon', 'david.denkenberger']
-            assessors = User.objects.filter(username__in=assessors)
             publications = Publication.objects.distinct().filter(
                 assessment__in=Assessment.objects.filter(
                     topic=search_topic,
-                    is_relevant=True,
-                    assessor__in=assessors  # Change to all assessors when we have enough to get average assessments for publications.
+                    is_relevant=True
                 )
-            ).order_by('title')
+            ).order_by('-humanprediction__relevance', '-humanprediction__n_assessments')
 
     page = request.GET.get('page', 1)
     paginator = Paginator(publications, 10)
