@@ -48,7 +48,7 @@ df['n_relevant'] = df.apply(get_n_relevant, axis=1)
 
 # What is the relevance of each publication?
 def get_relevance(row):
-    return row['n_relevant'] / row['n_assessments']
+    return row['n_relevant'] - (row['n_assessments'] - row['n_relevant'])
 df['relevance'] = df.apply(get_relevance, axis=1)
 
 # Save the predictions to the database.
