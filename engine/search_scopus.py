@@ -28,7 +28,7 @@ month = now.month
 day = now.day
 
 # This script is run as a daily task (monthly is not possible), but we want it to be run only as a monthly task, on a specified day of the month (day = 14).
-if (day != 14):
+if (day != 28):
     exit()
 
 # Load configuration
