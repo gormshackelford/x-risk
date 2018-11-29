@@ -137,6 +137,19 @@ def confirm_email(request, uidb64, token):
 
 
 @login_required
+def deactivate_confirm(request):
+    return render(request, 'engine/deactivate_confirm.html')
+
+
+@login_required
+def deactivate(request):
+    user = request.user
+    user.is_active = False
+    user.save()
+    return render(request, 'engine/deactivate.html')
+
+
+@login_required
 @transaction.atomic
 def profile(request):
     if request.method == 'POST':

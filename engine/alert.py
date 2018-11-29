@@ -70,7 +70,7 @@ else:
     exit()
 
 mailing_list = []
-users = User.objects.all()
+users = User.objects.filter(is_active=True)
 for user in users:
     mailing_list.append(user.email)
 
