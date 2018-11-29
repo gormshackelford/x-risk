@@ -14,4 +14,6 @@ Here are the titles of these new publications:
   {{ publication.title }} (<a href="http://www.x-risk.net{% url 'assessments' slug=topic.slug pk=publication.pk %}">Assess this publication</a>)
 {% endfor %}
 
+<a href="http://www.x-risk.net{% url 'deactivate_confirm' %}">Unsubscribe</a> from this mailing list
+
 {% endautoescape %}
