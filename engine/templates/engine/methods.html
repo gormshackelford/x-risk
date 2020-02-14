@@ -12,7 +12,7 @@
 {% block content %}
 
     <h1>Methods</h1>
-    <p>Different topics have different search strategies (the keywords that we use to search for publications) and different inclusion criteria (the criteria that we use to assess publications as "relevant" or "not relevant" for inclusion in the bibliography).</p>
+    <p>Please see <a href="https://doi.org/10.1016/j.futures.2019.102508" target="_blank">our publication in Futures</a> for more information.</p>
 
     <h1>Topic: Existential risk and global catastrophic risk</h1>
     <p>For the purpose of this assessment, a risk is "catastrophic" if it causes at least 10 million deaths (approximately) and a risk is "existential" if it causes the extinction of the human species or the collapse of human civilization<a href="#1"><sup>1</sup></a>. Publications that are relevant to this topic do not need to include the exact phrase "existential risk" or "global catastrophic risk", but they should be about a risk that is <span class="italic">global</span> and <span class="italic">catastrophic</span> in scale.</p>
@@ -104,10 +104,6 @@
 
     <h2>Machine Learning</h2>
     <p>We are using an artificial neural network (implemented in TensorFlow<a href="#5"><sup>5</sup></a>) to predict the relevance of publications that have not yet been assessed, based on the abstracts of publications that have been assessed (labelled as "relevant" or "irrelevant"). First, we exclude publications that do not have abstracts. Second, we randomly split these publications into a training set (80% of publications) and a test set (20% of publications). Third, we use the first 200 words of each abstract in the training set as the input into the neural network (200 is approximately the average number of words in these abstracts), and we use a "convolution" layer in the network to encode each of these words as a vector of numbers ("word embedding"), based on its relationship to the other words in the abstract. Fourth, we pass these word embeddings to a fully connected layer in the network. When this network is trained, we use it to predict the probability that each publication in the test set is relevant. We then generate three different models, by setting three different probability thresholds to control the trade-off between precision and recall. Please see <a href="{% url 'ml' %}">Machine Learning</a> for more information. We then use these models to predict the relevance of publications that have not yet been assessed by humans.</p>
-
-
-<h1>Other topics</h1>
-<p>To be announced</p>
 
 <h1>Notes</h1>
 <p><sup id="1">1</sup>For a definition of global catastrophic risks and existential risks (which are a subset of global catastrophic risks), please see Bostrom, N., &Cacute;irkovi&cacute;, M.M. (2008). <span class="italic">Global Catastrophic Risks</span>. Oxford University Press, Oxford.</p>

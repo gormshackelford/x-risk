@@ -23,6 +23,11 @@
 
     <p><a href="{% url 'password_reset' %}">Reset your password</a></p>
 
+    <br />
+    <br />
+
+    <p>If you have problems signing in, please note that your username may not be your email address. When you signed up, you should have received an email that shows your username.</p>
+
     {% if form.errors %}
       <p><span class="warning">Your username and/or password did not match our records, or you do not have permission to log in.</span> If you unsubscribed, please <a href="{% url 'contact' %}">contact us</a> to reactivate your account.</p>
     {% endif %}
