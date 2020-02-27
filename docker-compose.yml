@@ -1,0 +1,65 @@
+version: '2'
+
+services:
+
+  nginx-proxy:
+    restart: always
+    image: jwilder/nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/nginx/certs
+      - ./nginx-proxy/default_location:/etc/nginx/vhost.d/default_location
+      - django-static:/usr/src/x-risk/www/static
+    networks:
+      - nginx-proxy-net
+    depends_on:
+      - x-risk
+
+  x-risk:
+    build:
+      context: .
+    restart: always
+    volumes:
+      - db_dump:/usr/src/x-risk/db_dump
+      - .:/usr/src/x-risk
+      - django-static:/usr/src/x-risk/www/static
+    ports:
+      - 8000:8000
+    networks:
+      - nginx-proxy-net
+    environment:
+      - VIRTUAL_PORT=8000
+      - VIRTUAL_HOST=127.0.0.1
+    depends_on:
+      - x-risk-db
+
+  x-risk-db:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 3306:3306
+    networks:
+      - nginx-proxy-net
+    environment:
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+    volumes:
+      - db_data:/var/lib/mysql
+      - db_dump:/db_dump
+
+volumes:
+  db_data:
+  db_dump:
+  django-static:
+
+networks:
+  nginx-proxy-net:
+    external:
+      name: nginx-proxy-net

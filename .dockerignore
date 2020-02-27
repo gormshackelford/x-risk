@@ -1,21 +1,13 @@
-*.pyc
-*~
-__pycache__
-db.sqlite3
-.DS_Store
-
+.git
 .env
 config.json
 config.py
 config_with_docker.py
 config_without_docker.py
 abstracts_to_csv.py
-data/
-db_dump/
+/data
 delete_all_publications.py
-static/
-venv/
-xrisk/whoosh_index
+venv
 
 .ipynb_checkpoints/
 Agreement.ipynb
