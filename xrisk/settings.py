@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # The SSL certificate is installed for production, but not for development.
 SECURE_SSL_REDIRECT = bool(config.SECURE_SSL_REDIRECT)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'www.x-risk.net']
+ALLOWED_HOSTS = config.ALLOWED_HOSTS
 
 SECRET_KEY = config.SECRET_KEY
 
